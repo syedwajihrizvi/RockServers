@@ -10,14 +10,24 @@ namespace RockServers.Mappers
 {
     public static class AccountMappers
     {
-        public static CreatedUserDto ToCreatedUserDto(this IdentityUser user, string token)
+        public static UserDto ToCreatedUserDto(this IdentityUser user, string token)
         {
-            return new CreatedUserDto
+            return new UserDto
             {
                 Id = user.Id,
                 Email = user.Email!,
                 Username = user.UserName!,
                 Token = token
+            };
+        }
+
+        public static PostedByUserDto ToPostedByUserDto(this AppUser user)
+        {
+            return new PostedByUserDto
+            {
+                Email = user.Email!,
+                Username = user.UserName!,
+                Psn = user.Psn!
             };
         }
     }

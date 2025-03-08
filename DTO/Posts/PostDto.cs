@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using RockServers.DTO.Accounts;
+using RockServers.Models;
 
-namespace RockServers.Models
+namespace RockServers.DTO.Posts
 {
-    public class Post
+    public class PostDto
     {
         public int Id { get; set; }
 
@@ -19,17 +20,16 @@ namespace RockServers.Models
         // Convention to have ID and Navigation reference (for us)
         public int? GameId { get; set; }
 
-        public Game? Game { get; set; }
+        public string GameName { get; set; } = string.Empty;
 
         public string? AppUserId { get; set; }
 
-        public AppUser? AppUser { get; set; }
+        public PostedByUserDto? AppUser { get; set; }
 
         public List<Comment> Comments { get; set; } = [];
 
         public int Views { get; set; } = 0;
         public int Likes { get; set; } = 0;
         public int Dislikes { get; set; } = 0;
-
     }
 }

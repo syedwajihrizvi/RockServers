@@ -17,10 +17,15 @@ namespace RockServers.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly ITokenService _tokenService;
-        public AccountController(UserManager<AppUser> userManager, ITokenService tokenService)
+        private readonly SignInManager<AppUser> _signInManager;
+        public AccountController(
+            UserManager<AppUser> userManager,
+            ITokenService tokenService,
+            SignInManager<AppUser> signInManager)
         {
             _userManager = userManager;
             _tokenService = tokenService;
+            _signInManager = signInManager;
         }
 
         [HttpPost("register")]
@@ -59,6 +64,27 @@ namespace RockServers.Controllers
             {
                 return BadRequest("Error. Registeration missing password");
             }
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+        {
+            var user = loginDto.Email != null ?
+                await _userManager.FindByEmailAsync(loginDto.Email!) :
+                await _userManager.FindByNameAsync(loginDto.Username!);
+            if (user == null)
+                return Unauthorized("Invalid Login Details Provided");
+            var result = _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
+            if (result.IsCompletedSuccessfully)
+                return Ok(new BaseUserDto
+                {
+                    Email = user.Email!,
+                    Username = user.UserName!,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Token = _tokenService.CreateToken(user)
+                });
+            return Unauthorized("Invalid Login Details Provided");
         }
     }
 }

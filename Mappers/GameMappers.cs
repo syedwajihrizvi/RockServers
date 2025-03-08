@@ -21,9 +21,9 @@ namespace RockServers.Mappers
             };
         }
 
-        public static CreatedGameDto ToCreatedGameDto(this Game gameModel)
+        public static GameDto ToCreatedGameDto(this Game gameModel)
         {
-            return new CreatedGameDto
+            return new GameDto
             {
                 Id = gameModel.Id,
                 Title = gameModel.Title,

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace RockServers.DTO.Games
 {
-    public class CreatedGameDto
+    public class GameDto
     {
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;

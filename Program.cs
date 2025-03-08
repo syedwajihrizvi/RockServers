@@ -7,6 +7,8 @@ using Microsoft.OpenApi.Models;
 using RockServers.Data;
 using RockServers.Models;
 using Newtonsoft.Json;
+using RockServers.Interfaces;
+using RockServers.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -54,9 +56,11 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidAudience = builder.Configuration["JWT:Audience"],
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"]))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"]!))
     };
 });
+
+builder.Services.AddScoped<ITokenService, TokenService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

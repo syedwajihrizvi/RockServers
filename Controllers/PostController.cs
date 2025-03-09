@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using RockServers.Data;
 using RockServers.DTO.Posts;
 using RockServers.Extensions;
+using RockServers.Helpers;
 using RockServers.Mappers;
 using RockServers.Models;
 
@@ -24,13 +25,52 @@ namespace RockServers.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] PostQueryObject queryObject)
         {
-            var posts = await _context.Posts
-                                      .Include(p => p.Game)
-                                      .Include(p => p.AppUser)
-                                      .Include(p => p.Comments).ToListAsync();
-            var postsDtos = posts.Select(p => p.ToPostDto());
+            var posts = _context.Posts.AsQueryable();
+            Console.WriteLine(queryObject.Description);
+            if (queryObject != null)
+            {
+                if (!string.IsNullOrWhiteSpace(queryObject.Title))
+                    posts = posts.Where(p => p.Title.ToLower().Contains(queryObject.Title.ToLower()));
+                if (!string.IsNullOrWhiteSpace(queryObject.Description))
+                    posts = posts.Where(p => p.Description.ToLower().Contains(queryObject.Description.ToLower()));
+                if (queryObject.GameId != null)
+                    posts = posts.Where(p => p.GameId == queryObject.GameId);
+                if (!string.IsNullOrWhiteSpace(queryObject.AppUserId))
+                    posts = posts.Where(p => p.AppUserId == queryObject.AppUserId);
+
+                // Check for Views
+                if (queryObject.Views_eq != null)
+                    posts = posts.Where(p => p.Views == queryObject.Views_eq);
+                else if (queryObject.Views_lte != null)
+                    posts = posts.Where(p => p.Views <= queryObject.Views_lte);
+                else if (queryObject.Views_gte != null)
+                    posts = posts.Where(p => p.Views >= queryObject.Views_gte);
+
+                // Check for Likes
+                if (queryObject.Likes_eq != null)
+                    posts = posts.Where(p => p.Views == queryObject.Likes_eq);
+                else if (queryObject.Views_lte != null)
+                    posts = posts.Where(p => p.Views <= queryObject.Likes_lte);
+                else if (queryObject.Views_gte != null)
+                    posts = posts.Where(p => p.Views >= queryObject.Likes_gte);
+
+                // Check for Dislikes
+                if (queryObject.Dislikes_eq != null)
+                    posts = posts.Where(p => p.Views == queryObject.Dislikes_eq);
+                else if (queryObject.Views_lte != null)
+                    posts = posts.Where(p => p.Views <= queryObject.Dislikes_lte);
+                else if (queryObject.Views_gte != null)
+                    posts = posts.Where(p => p.Views >= queryObject.Dislikes_gte);
+
+                // Check for latest
+                if (queryObject.Latest)
+                    posts = posts.OrderByDescending(p => p.PostedAt);
+            }
+            var postsDtos = await posts.Include(p => p.Game)
+                                 .Include(p => p.AppUser)
+                                 .Include(p => p.Comments).Select(p => p.ToPostDto()).ToListAsync();
             return Ok(postsDtos);
         }
 

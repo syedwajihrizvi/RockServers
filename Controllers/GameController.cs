@@ -22,7 +22,7 @@ namespace RockServers.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] QueryObject queryObject)
+        public async Task<IActionResult> GetAll([FromQuery] GameQueryObject queryObject)
         {
             var games = _context.Games.AsQueryable();
             if (queryObject.Title != null)
@@ -31,10 +31,10 @@ namespace RockServers.Controllers
                 games = games.Where(g => g.Slug.Contains(queryObject.Slug));
             if (queryObject.Posts_eq != null)
                 games = games.Where(g => g.Posts.Count() == queryObject.Posts_eq);
-            if (queryObject.Posts_gt != null)
-                games = games.Where(g => g.Posts.Count() > queryObject.Posts_gt);
-            if (queryObject.Posts_lt != null)
-                games = games.Where(g => g.Posts.Count() < queryObject.Posts_lt);
+            if (queryObject.Posts_gte != null)
+                games = games.Where(g => g.Posts.Count() >= queryObject.Posts_gte);
+            if (queryObject.Posts_lte != null)
+                games = games.Where(g => g.Posts.Count() <= queryObject.Posts_lte);
             if (queryObject.SortBy != null)
             {
                 if (queryObject.SortBy.Equals("title", StringComparison.CurrentCultureIgnoreCase))

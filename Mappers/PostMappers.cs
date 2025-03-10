@@ -21,7 +21,7 @@ namespace RockServers.Mappers
                 GameName = post.Game!.Title,
                 AppUserId = post.AppUserId,
                 AppUser = post.AppUser!.ToPostedByUserDto(),
-                Comments = post.Comments,
+                Comments = [.. post.Comments.Select(c => c.ToCommentDto())],
                 Views = post.Views,
                 Likes = post.Likes,
                 Dislikes = post.Dislikes

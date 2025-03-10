@@ -36,4 +36,12 @@ namespace RockServers.Helpers
         public int Comments_eq { get; set; }
         public bool Latest { get; set; }
     }
+
+    public class CommentQueryObject
+    {
+        public int? PostId { get; set; }
+        public bool Latest { get; set; }
+        public bool SortByMostLikes { get; set; }
+        public bool SortByMostDislikes { get; set; }
+    }
 }

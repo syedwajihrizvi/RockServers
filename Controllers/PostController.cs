@@ -28,7 +28,6 @@ namespace RockServers.Controllers
         public async Task<IActionResult> GetAll([FromQuery] PostQueryObject queryObject)
         {
             var posts = _context.Posts.AsQueryable();
-            Console.WriteLine(queryObject.Description);
             if (queryObject != null)
             {
                 if (!string.IsNullOrWhiteSpace(queryObject.Title))

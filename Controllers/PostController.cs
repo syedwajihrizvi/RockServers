@@ -112,5 +112,31 @@ namespace RockServers.Controllers
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(Get), new { id = newPost.Id }, newPost);
         }
+
+        [HttpPatch("{postId:int}/updateLikes")]
+        public async Task<IActionResult> UpdatePostLikes([FromRoute] int postId, [FromBody] bool increment)
+        {
+            Console.WriteLine($"PostID: {postId}, Increment: {increment}");
+            var post = await _context.Posts.Where(p => p.Id == postId).FirstOrDefaultAsync();
+            if (post == null)
+                return NotFound($"Post with {postId} does not exist");
+            post.Likes += increment ? 1 : -1;
+            post.Likes = post.Dislikes < 0 ? 0 : post.Likes;
+            await _context.SaveChangesAsync();
+            return Ok(post);
+        }
+
+        [HttpPatch("{postId:int}/updateDislikes")]
+        public async Task<IActionResult> UpdatePostDislikes([FromRoute] int postId, [FromBody] bool increment)
+        {
+            Console.WriteLine($"PostID: {postId}, Increment: {increment}");
+            var post = await _context.Posts.Where(p => p.Id == postId).FirstOrDefaultAsync();
+            if (post == null)
+                return NotFound($"Post with {postId} does not exist");
+            post.Dislikes += increment ? 1 : -1;
+            post.Dislikes = post.Dislikes < 0 ? 0 : post.Dislikes;
+            await _context.SaveChangesAsync();
+            return Ok(post);
+        }
     };
 }

@@ -53,6 +53,15 @@ namespace RockServers.Controllers
             return Ok(commentsDto);
         }
 
+        [HttpGet("{commentId:int}")]
+        public async Task<IActionResult> GetComment([FromRoute] int commentId)
+        {
+            var comment = await _context.Comments.Where(c => c.Id == commentId).FirstOrDefaultAsync();
+            if (comment == null)
+                return NotFound($"Comment with ID {commentId} not found");
+            return Ok(comment);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCommentDto createCommentDto)
         {
@@ -68,6 +77,32 @@ namespace RockServers.Controllers
             await _context.Comments.AddAsync(comment);
             await _context.SaveChangesAsync();
             return Ok(createCommentDto);
+        }
+
+        [HttpPatch("{commentId:int}/updateLikes")]
+        public async Task<IActionResult> UpdatePostLikes([FromRoute] int commentId, [FromBody] bool increment)
+        {
+            Console.WriteLine($"CommentId: {commentId}, Increment: {increment}");
+            var comment = await _context.Comments.Where(c => c.Id == commentId).FirstOrDefaultAsync();
+            if (comment == null)
+                return base.NotFound($"Post with {comment} does not exist");
+            comment.Likes += increment ? 1 : -1;
+            comment.Likes = comment.Likes < 0 ? 0 : comment.Likes;
+            await _context.SaveChangesAsync();
+            return base.Ok(comment);
+        }
+
+        [HttpPatch("{commentId:int}/updateDislikes")]
+        public async Task<IActionResult> UpdatePostDislikes([FromRoute] int commentId, [FromBody] bool increment)
+        {
+            Console.WriteLine($"PostID: {commentId}, Increment: {increment}");
+            var comment = await _context.Comments.Where(c => c.Id == commentId).FirstOrDefaultAsync();
+            if (comment == null)
+                return base.NotFound($"Post with {comment} does not exist");
+            comment.Dislikes += increment ? 1 : -1;
+            comment.Dislikes = comment.Dislikes < 0 ? 0 : comment.Dislikes;
+            await _context.SaveChangesAsync();
+            return base.Ok(comment);
         }
     }
 }

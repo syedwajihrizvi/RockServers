@@ -30,7 +30,7 @@ namespace RockServers.Controllers
 
             if (queryObject != null)
             {
-                Console.WriteLine($"Query object was not null: {queryObject.PostId}");
+
                 if (queryObject.PostId != null)
                     comments = comments.Where(c => c.PostId == queryObject.PostId);
 
@@ -82,7 +82,6 @@ namespace RockServers.Controllers
         [HttpPatch("{commentId:int}/updateLikes")]
         public async Task<IActionResult> UpdatePostLikes([FromRoute] int commentId, [FromBody] bool increment)
         {
-            Console.WriteLine($"CommentId: {commentId}, Increment: {increment}");
             var comment = await _context.Comments.Where(c => c.Id == commentId).FirstOrDefaultAsync();
             if (comment == null)
                 return base.NotFound($"Post with {comment} does not exist");
@@ -95,7 +94,6 @@ namespace RockServers.Controllers
         [HttpPatch("{commentId:int}/updateDislikes")]
         public async Task<IActionResult> UpdatePostDislikes([FromRoute] int commentId, [FromBody] bool increment)
         {
-            Console.WriteLine($"PostID: {commentId}, Increment: {increment}");
             var comment = await _context.Comments.Where(c => c.Id == commentId).FirstOrDefaultAsync();
             if (comment == null)
                 return base.NotFound($"Post with {comment} does not exist");

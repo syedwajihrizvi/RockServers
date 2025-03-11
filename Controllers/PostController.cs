@@ -116,7 +116,6 @@ namespace RockServers.Controllers
         [HttpPatch("{postId:int}/updateLikes")]
         public async Task<IActionResult> UpdatePostLikes([FromRoute] int postId, [FromBody] bool increment)
         {
-            Console.WriteLine($"PostID: {postId}, Increment: {increment}");
             var post = await _context.Posts.Where(p => p.Id == postId).FirstOrDefaultAsync();
             if (post == null)
                 return NotFound($"Post with {postId} does not exist");
@@ -129,7 +128,6 @@ namespace RockServers.Controllers
         [HttpPatch("{postId:int}/updateDislikes")]
         public async Task<IActionResult> UpdatePostDislikes([FromRoute] int postId, [FromBody] bool increment)
         {
-            Console.WriteLine($"PostID: {postId}, Increment: {increment}");
             var post = await _context.Posts.Where(p => p.Id == postId).FirstOrDefaultAsync();
             if (post == null)
                 return NotFound($"Post with {postId} does not exist");

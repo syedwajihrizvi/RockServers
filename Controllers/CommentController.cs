@@ -104,5 +104,16 @@ namespace RockServers.Controllers
             await _context.SaveChangesAsync();
             return base.Ok(comment);
         }
+
+        [HttpDelete("{commentId:int}")]
+        public async Task<IActionResult> Delete([FromRoute] int commentId)
+        {
+            var comment = await _context.Comments.FindAsync(commentId);
+            if (comment == null)
+                return NotFound($"Comment with {commentId} not found");
+            _context.Remove(comment);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }

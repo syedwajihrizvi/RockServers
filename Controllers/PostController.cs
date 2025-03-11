@@ -138,5 +138,16 @@ namespace RockServers.Controllers
             await _context.SaveChangesAsync();
             return Ok(post);
         }
+
+        [HttpDelete("{postId:int}")]
+        public async Task<IActionResult> Delete([FromRoute] int postId)
+        {
+            var post = await _context.Posts.FindAsync(postId);
+            if (post == null)
+                return NotFound($"Post with {postId} not found");
+            _context.Remove(post);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
     };
 }

@@ -44,4 +44,11 @@ namespace RockServers.Helpers
         public bool SortByMostLikes { get; set; }
         public bool SortByMostDislikes { get; set; }
     }
+
+    public class SessionQueryObject
+    {
+        public int? PostId { get; set; }
+        public bool Completed { get; set; }
+        public bool Active { get; set; }
+    }
 }

@@ -20,17 +20,23 @@ namespace RockServers.Data
         public DbSet<Game> Games { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<Comment> Comments { get; set; }
-
+        public DbSet<Session> Sessions { get; set; }
         // Override model builder to account for the user
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            List<IdentityRole> roles = new List<IdentityRole>{
+            List<IdentityRole> roles =
+            [
                 new IdentityRole{Name = "Admin", NormalizedName = "ADMIN"},
                 new IdentityRole{Name = "User", NormalizedName = "USER"}
-            };
+            ];
 
             modelBuilder.Entity<IdentityRole>().HasData(roles);
+            modelBuilder.Entity<SessionUser>().HasKey(s => new { s.SessionId, s.AppUserId });
+            modelBuilder.Entity<Session>()
+                        .HasOne(s => s.Post)
+                        .WithMany(p => p.Sessions)
+                        .HasForeignKey(s => s.PostId);
         }
     }
 }

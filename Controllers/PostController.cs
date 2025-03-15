@@ -70,8 +70,10 @@ namespace RockServers.Controllers
             var postsDtos = await posts.Include(p => p.Game)
                                  .Include(p => p.AppUser)
                                  .Include(p => p.Comments)
+                                 .ThenInclude(c => c.AppUser)
                                  .Include(p => p.Sessions)
-                                 .ThenInclude(s => s.Users).Select(p => p.ToPostDto()).ToListAsync();
+                                 .ThenInclude(s => s.Users)
+                                 .Select(p => p.ToPostDto()).ToListAsync();
             return Ok(postsDtos);
         }
 
@@ -82,6 +84,7 @@ namespace RockServers.Controllers
                                      .Include(p => p.Game)
                                      .Include(p => p.AppUser)
                                      .Include(p => p.Comments)
+                                     .ThenInclude(c => c.AppUser)
                                      .Include(p => p.Sessions)
                                      .ThenInclude(s => s.Users).FirstOrDefaultAsync();
             if (post == null)

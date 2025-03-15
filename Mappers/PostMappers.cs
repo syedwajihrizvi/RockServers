@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using RockServers.DTO.Posts;
 using RockServers.Models;
+using RockServers.Mappers;
 
 namespace RockServers.Mappers
 {
@@ -22,6 +23,7 @@ namespace RockServers.Mappers
                 AppUserId = post.AppUserId,
                 AppUser = post.AppUser!.ToPostedByUserDto(),
                 Comments = [.. post.Comments.Select(c => c.ToCommentDto())],
+                Sessions = [.. post.Sessions.Select(s => s.ToSessionDto())],
                 Views = post.Views,
                 Likes = post.Likes,
                 Dislikes = post.Dislikes

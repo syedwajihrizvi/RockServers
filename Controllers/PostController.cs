@@ -69,7 +69,9 @@ namespace RockServers.Controllers
             }
             var postsDtos = await posts.Include(p => p.Game)
                                  .Include(p => p.AppUser)
-                                 .Include(p => p.Comments).Select(p => p.ToPostDto()).ToListAsync();
+                                 .Include(p => p.Comments)
+                                 .Include(p => p.Sessions)
+                                 .ThenInclude(s => s.Users).Select(p => p.ToPostDto()).ToListAsync();
             return Ok(postsDtos);
         }
 
@@ -79,7 +81,9 @@ namespace RockServers.Controllers
             var post = await _context.Posts.Where(p => p.Id == id)
                                      .Include(p => p.Game)
                                      .Include(p => p.AppUser)
-                                     .Include(p => p.Comments).FirstOrDefaultAsync();
+                                     .Include(p => p.Comments)
+                                     .Include(p => p.Sessions)
+                                     .ThenInclude(s => s.Users).FirstOrDefaultAsync();
             if (post == null)
                 return NotFound($"Post with {id} not found");
             return Ok(post.ToPostDto());

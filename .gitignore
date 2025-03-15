@@ -4,3 +4,4 @@ obj/
 Migrations
 RockServers.csproj
 appsettings.json
+internal.txt

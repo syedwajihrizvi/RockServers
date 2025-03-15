@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using RockServers.DTO.Accounts;
 using RockServers.DTO.Comments;
+using RockServers.DTO.Sessions;
 using RockServers.Models;
 
 namespace RockServers.DTO.Posts
@@ -28,6 +29,8 @@ namespace RockServers.DTO.Posts
         public PostedByUserDto? AppUser { get; set; }
 
         public List<CommentDto> Comments { get; set; } = [];
+
+        public List<SessionDto> Sessions { get; set; } = [];
         public int Views { get; set; } = 0;
         public int Likes { get; set; } = 0;
         public int Dislikes { get; set; } = 0;

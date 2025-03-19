@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
@@ -88,7 +89,7 @@ namespace RockServers.Controllers
             comment.Likes += increment ? 1 : -1;
             comment.Likes = comment.Likes < 0 ? 0 : comment.Likes;
             await _context.SaveChangesAsync();
-            return base.Ok(comment);
+            return Ok(comment);
         }
 
         [HttpPatch("{commentId:int}/updateDislikes")]
@@ -100,7 +101,28 @@ namespace RockServers.Controllers
             comment.Dislikes += increment ? 1 : -1;
             comment.Dislikes = comment.Dislikes < 0 ? 0 : comment.Dislikes;
             await _context.SaveChangesAsync();
-            return base.Ok(comment);
+            return Ok(comment);
+        }
+
+        [HttpPatch("{commentId:int}/updateComment")]
+        [Authorize]
+        public async Task<IActionResult> UpdateComment([FromRoute] int commentId, [FromBody] CreateCommentDto commentDto)
+        {
+            var comment = await _context.Comments.Where(c => c.Id == commentId).FirstOrDefaultAsync();
+            if (comment == null)
+                return NotFound($"Comment with ID ${commentId} not found");
+            var appUserId = User.GetUserId();
+            if (appUserId == null)
+                return Unauthorized("Invalid user request");
+            // Ensure the user sending the request matches the user that made the comment
+            if (comment.AppUserId != appUserId)
+                return Unauthorized("Invalid user Id");
+            if (!string.IsNullOrWhiteSpace(commentDto.Title))
+                comment.Title = commentDto.Title;
+            if (!string.IsNullOrWhiteSpace(commentDto.Content))
+                comment.Content = commentDto.Content;
+            await _context.SaveChangesAsync();
+            return Ok(comment);
         }
 
         [HttpDelete("{commentId:int}")]

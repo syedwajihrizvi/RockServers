@@ -109,5 +109,16 @@ namespace RockServers.Controllers
             await _context.SaveChangesAsync();
             return Ok(newSessionUser);
         }
+
+        [HttpPatch("{sessionId:int}/finish")]
+        public async Task<IActionResult> FinishSession([FromRoute] int sessionId)
+        {
+            var session = await _context.Sessions.Where(s => s.Id == sessionId).FirstOrDefaultAsync();
+            if (session == null)
+                return NotFound($"Session with ID {sessionId} not found");
+            session.EndTime = DateTime.Now;
+            await _context.SaveChangesAsync();
+            return Ok(session);
+        }
     }
 }

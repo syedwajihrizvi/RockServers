@@ -1,0 +1,10 @@
+./createPost.sh stealth_ninja '{"Title":"Missed Treasure in Austin", "PlatformId": 1, "Description":"Quick $2000 and Otis Miller Revolver", "GameId":1}' 5191
+./createPost.sh blaze_master '{"Title":"Humane Lab Heist", "PlatformId": 0, "Description":"Complete all setups and heist. 25% cut each", "GameId":2}' 5191
+./createPost.sh thunder_warrior '{"Title":"Cayo Perico money glitch", "PlatformId": 0, "Description", "One more persion needed. 60, 40 split" "GameId":2}' 5191
+./createPost.sh venom_strike '{"Title":"Race Meet outside of Los Santos customs", "PlatformId": 2, "Description": "Wagered based racing", "GameId":2}' 5191
+./createPost.sh rogue_name '{"Title":"Doomsday Heist", "PlatformId": 2, "Description": "Hard difficulty. Each person gets 15% and rest is leader", "GameId":2}' 5191
+./createPost.sh dark_phantom '{"Title":"Pacific Standard Hiest", "PlatformId": 2, "Description": "Hard difficulty. Each person gets 15% and rest is leader", "GameId":2}' 5191
+./createPost.sh alpha_striker '{"Title":"Arthur Morgan Lives. Alternale ending", "PlatformId": 0, "Description": "Arthur lives mod, with 20+ epilogue", "GameId":1}' 5191
+./createPost.sh frost_bite '{"Title":"GTA 6 Online race to 1M", "PlatformId": 0, "Description": "We will grind out every heist until each has a million.", "GameId":3}' 5191
+./createPost.sh bullet_rain '{"Title":"Shady Belle in GTA 6 Location", "PlatformId": 0, "Description": "We will grind out every heist until each has a million.", "GameId":3}' 5191
+./createPost.sh cyber_hawk '{"Title":"Jack Marston grave in GTA 6", "PlatformId": 1, "Description": "Found Jack Marstons grave in RDR2", "GameId":3}' 5191

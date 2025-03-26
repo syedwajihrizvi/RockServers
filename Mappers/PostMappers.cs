@@ -20,6 +20,8 @@ namespace RockServers.Mappers
                 PostedAt = post.PostedAt,
                 GameId = post.GameId,
                 GameName = post.Game!.Title,
+                PlatformId = post.PlatformId,
+                PlatformName = post.Platform!.Name,
                 AppUserId = post.AppUserId,
                 AppUser = post.AppUser!.ToPostedByUserDto(),
                 Comments = [.. post.Comments.Select(c => c.ToCommentDto())],

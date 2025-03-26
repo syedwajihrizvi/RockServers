@@ -18,6 +18,11 @@ namespace RockServers.Models
         public int? GameId { get; set; }
 
         public Game? Game { get; set; }
+
+        public int? PlatformId { get; set; }
+
+        public Platform? Platform { get; set; }
+
         public List<Session> Sessions { get; set; } = [];
 
         public string? AppUserId { get; set; }

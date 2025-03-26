@@ -38,7 +38,8 @@ namespace RockServers.Controllers
                     posts = posts.Where(p => p.GameId == queryObject.GameId);
                 if (!string.IsNullOrWhiteSpace(queryObject.AppUserId))
                     posts = posts.Where(p => p.AppUserId == queryObject.AppUserId);
-
+                if (queryObject.PlatformId != null)
+                    posts = posts.Where(p => p.PlatformId == queryObject.PlatformId);
                 // Check for Views
                 if (queryObject.Views_eq != null)
                     posts = posts.Where(p => p.Views == queryObject.Views_eq);
@@ -69,10 +70,12 @@ namespace RockServers.Controllers
             }
             var postsDtos = await posts.Include(p => p.Game)
                                  .Include(p => p.AppUser)
+                                 .Include(p => p.Platform)
                                  .Include(p => p.Comments)
                                  .ThenInclude(c => c.AppUser)
                                  .Include(p => p.Sessions)
                                  .ThenInclude(s => s.Users)
+                                 .ThenInclude(s => s.AppUser)
                                  .Select(p => p.ToPostDto()).ToListAsync();
             return Ok(postsDtos);
         }
@@ -83,10 +86,12 @@ namespace RockServers.Controllers
             var post = await _context.Posts.Where(p => p.Id == id)
                                      .Include(p => p.Game)
                                      .Include(p => p.AppUser)
+                                     .Include(p => p.Platform)
                                      .Include(p => p.Comments)
                                      .ThenInclude(c => c.AppUser)
                                      .Include(p => p.Sessions)
-                                     .ThenInclude(s => s.Users).FirstOrDefaultAsync();
+                                     .ThenInclude(s => s.Users)
+                                     .ThenInclude(s => s.AppUser).FirstOrDefaultAsync();
             if (post == null)
                 return NotFound($"Post with {id} not found");
             return Ok(post.ToPostDto());
@@ -101,7 +106,10 @@ namespace RockServers.Controllers
             var game = await _context.Games.Where(g => g.Id == gameId).FirstOrDefaultAsync();
             if (game == null)
                 return NotFound($"Game with {gameId} does not exist.");
-
+            var platformId = createPostDto.PlatformId;
+            var platform = await _context.Platforms.Where(p => p.Id == platformId).FirstOrDefaultAsync();
+            if (platform == null)
+                return NotFound($"Platform with id {platformId} not found");
             // Get the user Id from the JWT Token
             var appUserId = User.GetUserId();
             if (appUserId == null)
@@ -110,6 +118,7 @@ namespace RockServers.Controllers
             var newPost = new Post
             {
                 GameId = gameId,
+                PlatformId = platformId,
                 AppUserId = appUserId,
                 Title = createPostDto.Title,
                 Description = createPostDto.Description,

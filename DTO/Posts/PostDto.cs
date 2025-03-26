@@ -28,6 +28,10 @@ namespace RockServers.DTO.Posts
 
         public PostedByUserDto? AppUser { get; set; }
 
+        public int? PlatformId { get; set; }
+
+        public string PlatformName { get; set; } = string.Empty;
+
         public List<CommentDto> Comments { get; set; } = [];
 
         public List<SessionDto> Sessions { get; set; } = [];

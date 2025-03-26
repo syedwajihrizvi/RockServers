@@ -10,5 +10,7 @@ namespace RockServers.DTO.Posts
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public int GameId { get; set; }
+
+        public int PlatformId { get; set; }
     }
 }

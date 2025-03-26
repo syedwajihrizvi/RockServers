@@ -59,7 +59,6 @@ namespace RockServers.Controllers
         [Authorize]
         public async Task<IActionResult> CreateSession([FromBody] int postId)
         {
-            Console.WriteLine($"Post ID from request: {postId}");
             var post = await _context.Posts.Where(p => p.Id == postId).FirstOrDefaultAsync();
             if (post == null)
                 return NotFound($"Post with ID: {postId} not found");

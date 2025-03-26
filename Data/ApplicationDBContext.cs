@@ -23,6 +23,8 @@ namespace RockServers.Data
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Session> Sessions { get; set; }
         public DbSet<SessionUser> SessionUsers { get; set; }
+
+        public DbSet<Platform> Platforms { get; set; }
         // Override model builder to account for the user
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

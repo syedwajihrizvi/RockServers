@@ -6,4 +6,4 @@ while IFS= read -r line; do
         	TOKEN=$(echo "$line" | grep -o '"token":"[^"]*"' | cut -d ':' -f2- | tr -d '"' | tr -d ' ')
         	echo "$USERNAME:$TOKEN," >> ./usernameToToken.txt
 	fi
-done < register.txt
+done < ./logs/register.txt

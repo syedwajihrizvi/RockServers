@@ -56,4 +56,9 @@ namespace RockServers.Helpers
         public bool Completed { get; set; }
         public bool Active { get; set; }
     }
+
+    public class DiscussionQueryObject
+    {
+        public int? GameId { get; set; }
+    }
 }

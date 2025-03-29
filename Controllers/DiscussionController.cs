@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using RockServers.Data;
 using RockServers.DTO.Discussions;
 using RockServers.Extensions;
+using RockServers.Helpers;
 using RockServers.Mappers;
 using RockServers.Models;
 
@@ -26,14 +27,20 @@ namespace RockServers.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] DiscussionQueryObject queryObject)
         {
-            var discussions = await _context.Discussions
-                                            .Include(d => d.Game)
-                                            .Include(d => d.AppUser)
-                                            .Select(d => d.ToDiscussionDto())
-                                            .ToListAsync();
-            return Ok(discussions);
+            var discussions = _context.Discussions.AsQueryable();
+            if (queryObject != null)
+            {
+                if (queryObject.GameId != null)
+                    discussions = discussions.Where(g => g.GameId == queryObject.GameId);
+            }
+            ;
+            var discussionDtos = await discussions.Include(d => d.Game)
+                                           .Include(d => d.AppUser)
+                                           .Select(d => d.ToDiscussionDto())
+                                           .ToListAsync();
+            return Ok(discussionDtos);
         }
 
         [HttpGet("{id:int}")]

@@ -22,6 +22,8 @@ namespace RockServers.Helpers
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public int? GameId { get; set; }
+
+        public int? PostToRemoveId { get; set; }
         public int? PlatformId { get; set; }
         public string AppUserId { get; set; } = string.Empty;
         public int? Views_lte { get; set; }
@@ -37,6 +39,7 @@ namespace RockServers.Helpers
         public int? Comments_lte { get; set; }
         public int Comments_eq { get; set; }
         public bool Latest { get; set; }
+        public int? Limit { get; set; }
     }
 
     public class CommentQueryObject

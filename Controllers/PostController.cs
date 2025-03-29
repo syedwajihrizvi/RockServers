@@ -67,6 +67,14 @@ namespace RockServers.Controllers
                 // Check for latest
                 if (queryObject.Latest)
                     posts = posts.OrderByDescending(p => p.PostedAt);
+
+
+                if (queryObject.PostToRemoveId != null)
+                    posts = posts.Where(p => p.Id != queryObject.PostToRemoveId);
+
+                // If there is a limit
+                if (queryObject.Limit != null)
+                    posts = posts.Take((int)queryObject.Limit);
             }
             var postsDtos = await posts.Include(p => p.Game)
                                  .Include(p => p.AppUser)

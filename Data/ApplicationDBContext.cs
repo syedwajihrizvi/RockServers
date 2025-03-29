@@ -25,6 +25,7 @@ namespace RockServers.Data
         public DbSet<SessionUser> SessionUsers { get; set; }
 
         public DbSet<Platform> Platforms { get; set; }
+        public DbSet<Discussion> Discussions { get; set; }
         // Override model builder to account for the user
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

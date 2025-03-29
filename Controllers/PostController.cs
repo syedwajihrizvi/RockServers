@@ -30,6 +30,14 @@ namespace RockServers.Controllers
             var posts = _context.Posts.AsQueryable();
             if (queryObject != null)
             {
+                if (!string.IsNullOrWhiteSpace(queryObject.SearchValue))
+                {
+                    posts = posts.Include(p => p.Game).Where(p => (
+                        p.Title.ToLower().Trim().Replace(" ", "").Contains(queryObject.SearchValue.ToLower().Trim().Replace(" ", "")) ||
+                        p.Game!.Title.ToLower().Trim().Replace(" ", "").Contains(queryObject.SearchValue.ToLower().Trim().Replace(" ", ""))
+                        ))
+                                 ;
+                }
                 if (!string.IsNullOrWhiteSpace(queryObject.Title))
                     posts = posts.Where(p => p.Title.ToLower().Contains(queryObject.Title.ToLower()));
                 if (!string.IsNullOrWhiteSpace(queryObject.Description))
@@ -67,7 +75,6 @@ namespace RockServers.Controllers
                 // Check for latest
                 if (queryObject.Latest)
                     posts = posts.OrderByDescending(p => p.PostedAt);
-
 
                 if (queryObject.PostToRemoveId != null)
                     posts = posts.Where(p => p.Id != queryObject.PostToRemoveId);

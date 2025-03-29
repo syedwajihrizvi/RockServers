@@ -22,7 +22,7 @@ namespace RockServers.Helpers
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public int? GameId { get; set; }
-
+        public string? SearchValue { get; set; }
         public int? PostToRemoveId { get; set; }
         public int? PlatformId { get; set; }
         public string AppUserId { get; set; } = string.Empty;

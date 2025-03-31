@@ -49,6 +49,11 @@ namespace RockServers.Controllers
             var discussion = await _context.Discussions.Where(d => d.Id == id)
                                                        .Include(d => d.Game)
                                                        .Include(d => d.AppUser)
+                                                       .Include(d => d.DiscussionComments)
+                                                       .ThenInclude(c => c.AppUser)
+                                                       .Include(d => d.DiscussionComments)
+                                                       .ThenInclude(c => c.Replies)
+                                                       .ThenInclude(r => r.AppUser)
                                                        .FirstOrDefaultAsync();
             if (discussion == null)
                 return NotFound($"Discussion ID with {id} does not exist.");

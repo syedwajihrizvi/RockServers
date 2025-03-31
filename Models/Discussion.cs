@@ -16,7 +16,7 @@ namespace RockServers.Models
         public AppUser? AppUser { get; set; }
         public string ImagePath { get; set; } = string.Empty;
         public string? AppUserId { get; set; }
-        public List<Comment> Comments { get; set; } = [];
+        public List<DiscussionComment> DiscussionComments { get; set; } = [];
         public int Likes = 0;
         public int Views = 0;
     }

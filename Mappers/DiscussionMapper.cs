@@ -21,6 +21,7 @@ namespace RockServers.Mappers
                 ImagePath = discussion.ImagePath,
                 AppUserId = discussion.AppUserId,
                 AppUser = discussion.AppUser!.ToPostedByUserDto(),
+                Comments = [.. discussion.DiscussionComments.Select(d => d.ToDiscussionCommentDto())],
                 Likes = discussion.Likes,
                 Views = discussion.Views
             };

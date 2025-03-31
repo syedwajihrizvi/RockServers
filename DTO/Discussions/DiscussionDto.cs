@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using RockServers.DTO.Accounts;
+using RockServers.DTO.Comments;
 
 namespace RockServers.DTO.Discussions
 {
@@ -16,6 +17,7 @@ namespace RockServers.DTO.Discussions
         public string ImagePath { get; set; } = string.Empty;
         public string? AppUserId { get; set; }
         public PostedByUserDto? AppUser { get; set; }
+        public List<DiscussionCommentDto> Comments { get; set; } = [];
         public int Likes = 0;
         public int Views = 0;
 

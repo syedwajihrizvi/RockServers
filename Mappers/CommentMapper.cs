@@ -9,6 +9,17 @@ namespace RockServers.Mappers
 {
     public static class CommentMapper
     {
+        public static ReplyDto ToReplyDto(this Reply reply)
+        {
+            return new ReplyDto
+            {
+                Content = reply.Content,
+                RepliedAt = reply.RepliedAt,
+                AppUserId = reply.AppUser!.Id,
+                CommentedBy = reply.AppUser.UserName!
+            };
+        }
+
         public static Comment ToCommentFromCreate(this CreateCommentDto createCommentDto, string appUserId)
         {
             return new Comment
@@ -31,6 +42,21 @@ namespace RockServers.Mappers
                 CommentedAt = comment.CommentedAt,
                 Likes = comment.Likes,
                 Dislikes = comment.Dislikes
+            };
+        }
+
+        public static DiscussionCommentDto ToDiscussionCommentDto(this DiscussionComment discussionComment)
+        {
+            return new DiscussionCommentDto
+            {
+
+                Content = discussionComment.Content,
+                CommentedBy = discussionComment.AppUser!.UserName!,
+                AppUserId = discussionComment.AppUserId,
+                Replies = [.. discussionComment.Replies.Select(s => s.ToReplyDto())],
+                CommentedAt = discussionComment.CommentedAt,
+                Likes = discussionComment.Likes,
+                Dislikes = discussionComment.Dislikes
             };
         }
     }

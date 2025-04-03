@@ -15,6 +15,8 @@ namespace RockServers.DTO.Discussions
         public int? GameId { get; set; }
         public string GameName { get; set; } = string.Empty;
         public string ImagePath { get; set; } = string.Empty;
+
+        public List<string>? OtherImages { get; set; }
         public string? AppUserId { get; set; }
         public PostedByUserDto? AppUser { get; set; }
         public List<DiscussionCommentDto> Comments { get; set; } = [];

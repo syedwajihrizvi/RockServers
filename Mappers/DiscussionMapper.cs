@@ -19,6 +19,7 @@ namespace RockServers.Mappers
                 GameId = discussion.GameId,
                 GameName = discussion.Game!.Title,
                 ImagePath = discussion.ImagePath,
+                OtherImages = discussion.OtherImages,
                 AppUserId = discussion.AppUserId,
                 AppUser = discussion.AppUser!.ToPostedByUserDto(),
                 Comments = [.. discussion.DiscussionComments.Select(d => d.ToDiscussionCommentDto())],

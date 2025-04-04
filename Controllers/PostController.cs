@@ -48,41 +48,36 @@ namespace RockServers.Controllers
                     posts = posts.Where(p => p.AppUserId == queryObject.AppUserId);
                 if (queryObject.PlatformId != null)
                     posts = posts.Where(p => p.PlatformId == queryObject.PlatformId);
-                // Check for Views
-                if (queryObject.Views_eq != null)
-                    posts = posts.Where(p => p.Views == queryObject.Views_eq);
-                else if (queryObject.Views_lte != null)
-                    posts = posts.Where(p => p.Views <= queryObject.Views_lte);
-                else if (queryObject.Views_gte != null)
-                    posts = posts.Where(p => p.Views >= queryObject.Views_gte);
-
-                // Check for Likes
-                if (queryObject.Likes_eq != null)
-                    posts = posts.Where(p => p.Views == queryObject.Likes_eq);
-                else if (queryObject.Views_lte != null)
-                    posts = posts.Where(p => p.Views <= queryObject.Likes_lte);
-                else if (queryObject.Views_gte != null)
-                    posts = posts.Where(p => p.Views >= queryObject.Likes_gte);
-
-                // Check for Dislikes
-                if (queryObject.Dislikes_eq != null)
-                    posts = posts.Where(p => p.Views == queryObject.Dislikes_eq);
-                else if (queryObject.Views_lte != null)
-                    posts = posts.Where(p => p.Views <= queryObject.Dislikes_lte);
-                else if (queryObject.Views_gte != null)
-                    posts = posts.Where(p => p.Views >= queryObject.Dislikes_gte);
 
                 // Check for latest
-                if (queryObject.Latest)
+                if (queryObject.MostRecent)
                     posts = posts.OrderByDescending(p => p.PostedAt);
 
                 if (queryObject.PostToRemoveId != null)
                     posts = posts.Where(p => p.Id != queryObject.PostToRemoveId);
 
+                // Check if we want posts based on sessions
+                if (queryObject.SessionType == "active")
+                    posts = posts.Where(p => p.Sessions.Any(s => s.EndTime == null));
+
+                if (queryObject.SessionType == "joinable")
+                    posts = posts.Where(p => !p.Sessions.Any(s => s.EndTime == null));
+
                 // If there is a limit
                 if (queryObject.Limit != null)
                     posts = posts.Take((int)queryObject.Limit);
+
+                if (!string.IsNullOrWhiteSpace(queryObject.OrderBy))
+                {
+                    if (queryObject.OrderBy == "likes")
+                        posts = posts.OrderByDescending(p => p.Likes);
+                    else if (queryObject.OrderBy == "comments")
+                        posts = posts.OrderByDescending(p => p.Comments.Count);
+                    else if (queryObject.OrderBy == "views")
+                        posts = posts.OrderByDescending(p => p.Views);
+                }
             }
+
             var postsDtos = await posts.Include(p => p.Game)
                                  .Include(p => p.AppUser)
                                  .Include(p => p.Platform)
@@ -92,6 +87,7 @@ namespace RockServers.Controllers
                                  .ThenInclude(s => s.Users)
                                  .ThenInclude(s => s.AppUser)
                                  .Select(p => p.ToPostDto()).ToListAsync();
+            // Check the type of posts we are fetching
             return Ok(postsDtos);
         }
 

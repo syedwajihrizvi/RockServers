@@ -35,6 +35,7 @@ namespace RockServers.DTO.Posts
         public List<CommentDto> Comments { get; set; } = [];
         public string ImagePath { get; set; } = string.Empty;
         public List<SessionDto> Sessions { get; set; } = [];
+        public bool ActiveSession { get; set; }
         public int Views { get; set; } = 0;
         public int Likes { get; set; } = 0;
         public int Dislikes { get; set; } = 0;

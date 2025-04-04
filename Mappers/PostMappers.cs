@@ -26,6 +26,7 @@ namespace RockServers.Mappers
                 AppUser = post.AppUser!.ToPostedByUserDto(),
                 Comments = [.. post.Comments.Select(c => c.ToCommentDto())],
                 Sessions = [.. post.Sessions.Select(s => s.ToSessionDto())],
+                ActiveSession = post.Sessions.FindAll(s => s.Active).ToList().Count > 0,
                 ImagePath = post.ImagePath,
                 Views = post.Views,
                 Likes = post.Likes,

@@ -26,19 +26,9 @@ namespace RockServers.Helpers
         public int? PostToRemoveId { get; set; }
         public int? PlatformId { get; set; }
         public string AppUserId { get; set; } = string.Empty;
-        public int? Views_lte { get; set; }
-        public int? Views_eq { get; set; }
-        public int? Views_gte { get; set; }
-        public int? Likes_gte { get; set; }
-        public int? Likes_lte { get; set; }
-        public int? Likes_eq { get; set; }
-        public int? Dislikes_gte { get; set; }
-        public int? Dislikes_lte { get; set; }
-        public int? Dislikes_eq { get; set; }
-        public int? Comments_gte { get; set; }
-        public int? Comments_lte { get; set; }
-        public int Comments_eq { get; set; }
-        public bool Latest { get; set; }
+        public string SessionType { get; set; } = string.Empty;
+        public string OrderBy { get; set; } = string.Empty;
+        public bool MostRecent { get; set; }
         public int? Limit { get; set; }
     }
 

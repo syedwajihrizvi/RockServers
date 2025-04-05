@@ -34,10 +34,36 @@ namespace RockServers.Controllers
             {
                 if (queryObject.GameId != null)
                     discussions = discussions.Where(g => g.GameId == queryObject.GameId);
+                if (queryObject.SearchValue != null)
+                    discussions = discussions.Include(d => d.Game).Where(d => (
+                        d.Title.ToLower().Trim().Replace(" ", "").Contains(queryObject.SearchValue.ToLower().Trim().Replace(" ", "")) ||
+                        d.Content.ToLower().Trim().Replace(" ", "").Contains(queryObject.SearchValue.ToLower().Trim().Replace(" ", "")) ||
+                        d.Game!.Title.ToLower().Trim().Replace(" ", "").Contains(queryObject.SearchValue.ToLower().Trim().Replace(" ", ""))
+                    ));
+
+                // Check for latest
+                if (queryObject.MostRecent)
+                    discussions = discussions.OrderByDescending(d => d.PostedAt);
+
+                // Check for limit
+                if (queryObject.Limit != null)
+                    discussions = discussions.Take((int)queryObject.Limit);
+
+                if (!string.IsNullOrWhiteSpace(queryObject.OrderBy))
+                {
+                    if (queryObject.OrderBy == "likes")
+                        discussions = discussions.OrderByDescending(d => d.Likes);
+                    else if (queryObject.OrderBy == "comments")
+                        discussions = discussions.OrderByDescending(d => d.DiscussionComments.Count);
+                    else if (queryObject.OrderBy == "views")
+                        discussions = discussions.OrderByDescending(d => d.Views);
+                }
             }
             ;
+
             var discussionDtos = await discussions.Include(d => d.Game)
                                            .Include(d => d.AppUser)
+                                           .Include(d => d.DiscussionComments)
                                            .Select(d => d.ToDiscussionDto())
                                            .ToListAsync();
             return Ok(discussionDtos);
@@ -57,7 +83,7 @@ namespace RockServers.Controllers
                                                        .FirstOrDefaultAsync();
             if (discussion == null)
                 return NotFound($"Discussion ID with {id} does not exist.");
-            return Ok(discussion.ToDiscussionDto());
+            return Ok(discussion.ToGetDiscussionDto());
         }
 
         [HttpPost]

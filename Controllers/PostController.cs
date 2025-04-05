@@ -34,9 +34,9 @@ namespace RockServers.Controllers
                 {
                     posts = posts.Include(p => p.Game).Where(p => (
                         p.Title.ToLower().Trim().Replace(" ", "").Contains(queryObject.SearchValue.ToLower().Trim().Replace(" ", "")) ||
+                        p.Description.ToLower().Trim().Replace(" ", "").Contains(queryObject.SearchValue.ToLower().Trim().Replace(" ", "")) ||
                         p.Game!.Title.ToLower().Trim().Replace(" ", "").Contains(queryObject.SearchValue.ToLower().Trim().Replace(" ", ""))
-                        ))
-                                 ;
+                        ));
                 }
                 if (!string.IsNullOrWhiteSpace(queryObject.Title))
                     posts = posts.Where(p => p.Title.ToLower().Contains(queryObject.Title.ToLower()));

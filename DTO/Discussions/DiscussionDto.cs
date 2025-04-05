@@ -12,16 +12,26 @@ namespace RockServers.DTO.Discussions
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
+        public string ImagePath { get; set; } = string.Empty;
+        public string? AppUserId { get; set; }
+        public PostedByUserDto? AppUser { get; set; }
+        public int Comments { get; set; } = 0;
+        public int Likes { get; set; } = 0;
+        public int Views { get; set; } = 0;
+    }
+    public class GetDiscussionDto
+    {
+        public int Id { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty;
         public int? GameId { get; set; }
         public string GameName { get; set; } = string.Empty;
         public string ImagePath { get; set; } = string.Empty;
-
         public List<string>? OtherImages { get; set; }
         public string? AppUserId { get; set; }
         public PostedByUserDto? AppUser { get; set; }
         public List<DiscussionCommentDto> Comments { get; set; } = [];
-        public int Likes = 0;
-        public int Views = 0;
-
+        public int Likes { get; set; } = 0;
+        public int Views { get; set; } = 0;
     }
 }

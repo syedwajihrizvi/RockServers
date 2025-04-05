@@ -16,6 +16,21 @@ namespace RockServers.Mappers
                 Id = discussion.Id,
                 Title = discussion.Title,
                 Content = discussion.Content,
+                ImagePath = discussion.ImagePath,
+                AppUserId = discussion.AppUserId,
+                AppUser = discussion.AppUser!.ToPostedByUserDto(),
+                Likes = discussion.Likes,
+                Comments = discussion.DiscussionComments.Count,
+                Views = discussion.Views
+            };
+        }
+        public static GetDiscussionDto ToGetDiscussionDto(this Discussion discussion)
+        {
+            return new GetDiscussionDto
+            {
+                Id = discussion.Id,
+                Title = discussion.Title,
+                Content = discussion.Content,
                 GameId = discussion.GameId,
                 GameName = discussion.Game!.Title,
                 ImagePath = discussion.ImagePath,
@@ -27,5 +42,6 @@ namespace RockServers.Mappers
                 Views = discussion.Views
             };
         }
+
     }
 }

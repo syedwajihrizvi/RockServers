@@ -20,7 +20,7 @@ namespace RockServers.Models
         public List<string>? OtherImages { get; set; }
         public string? AppUserId { get; set; }
         public List<DiscussionComment> DiscussionComments { get; set; } = [];
-        public int Likes = 0;
-        public int Views = 0;
+        public int Likes { get; set; } = 0;
+        public int Views { get; set; } = 0;
     }
 }

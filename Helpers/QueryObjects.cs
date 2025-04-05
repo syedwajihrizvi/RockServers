@@ -50,5 +50,10 @@ namespace RockServers.Helpers
     public class DiscussionQueryObject
     {
         public int? GameId { get; set; }
+        public string? SearchValue { get; set; }
+        public string OrderBy { get; set; } = string.Empty;
+        public bool MostRecent { get; set; }
+        public int? Limit { get; set; }
+
     }
 }

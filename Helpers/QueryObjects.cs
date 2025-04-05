@@ -32,6 +32,18 @@ namespace RockServers.Helpers
         public int? Limit { get; set; }
     }
 
+    public class DiscussionQueryObject
+    {
+        public int? GameId { get; set; }
+        public string? SearchValue { get; set; }
+        public int? DiscussionToRemoveId { get; set; }
+        public string OrderBy { get; set; } = string.Empty;
+        public bool MostRecent { get; set; }
+        public int? Limit { get; set; }
+
+    }
+
+
     public class CommentQueryObject
     {
         public int? PostId { get; set; }
@@ -45,15 +57,5 @@ namespace RockServers.Helpers
         public int? PostId { get; set; }
         public bool Completed { get; set; }
         public bool Active { get; set; }
-    }
-
-    public class DiscussionQueryObject
-    {
-        public int? GameId { get; set; }
-        public string? SearchValue { get; set; }
-        public string OrderBy { get; set; } = string.Empty;
-        public bool MostRecent { get; set; }
-        public int? Limit { get; set; }
-
     }
 }

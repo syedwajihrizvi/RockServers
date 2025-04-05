@@ -45,9 +45,9 @@ namespace RockServers.Controllers
                 if (queryObject.MostRecent)
                     discussions = discussions.OrderByDescending(d => d.PostedAt);
 
-                // Check for limit
-                if (queryObject.Limit != null)
-                    discussions = discussions.Take((int)queryObject.Limit);
+                // Check if we ant to remove any discussions
+                if (queryObject.DiscussionToRemoveId != null)
+                    discussions = discussions.Where(d => d.Id != queryObject.DiscussionToRemoveId);
 
                 if (!string.IsNullOrWhiteSpace(queryObject.OrderBy))
                 {
@@ -58,6 +58,10 @@ namespace RockServers.Controllers
                     else if (queryObject.OrderBy == "views")
                         discussions = discussions.OrderByDescending(d => d.Views);
                 }
+
+                // Check for limit
+                if (queryObject.Limit != null)
+                    discussions = discussions.Take((int)queryObject.Limit);
             }
             ;
 

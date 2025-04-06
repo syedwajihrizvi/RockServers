@@ -30,5 +30,15 @@ namespace RockServers.Mappers
                 Psn = user.Psn!
             };
         }
+
+        public static UserInformationDto ToUserInformationDto(this AppUser user)
+        {
+            return new UserInformationDto
+            {
+                Id = user.Id!,
+                Email = user.Email!,
+                Username = user.UserName!,
+            };
+        }
     }
 }

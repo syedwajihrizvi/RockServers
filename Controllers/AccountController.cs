@@ -9,6 +9,7 @@ using RockServers.DTO.Accounts;
 using RockServers.Mappers;
 using RockServers.Services;
 using RockServers.Interfaces;
+using RockServers.Extensions;
 namespace RockServers.Controllers
 {
     [Route("api/accounts")]
@@ -28,6 +29,17 @@ namespace RockServers.Controllers
             _signInManager = signInManager;
         }
 
+        [HttpGet("me")]
+        public async Task<IActionResult> Me()
+        {
+            var appUserId = User.GetUserId();
+            if (appUserId == null)
+                return Unauthorized("Invalid User ID Provided");
+            var appUser = await _userManager.FindByIdAsync(appUserId);
+            if (appUser == null)
+                return Unauthorized("Invalid User ID Provided");
+            return Ok(appUser.ToUserInformationDto());
+        }
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {

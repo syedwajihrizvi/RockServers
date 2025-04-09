@@ -81,9 +81,9 @@ namespace RockServers.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
-            var user = loginDto.Email != null ?
-                await _userManager.FindByEmailAsync(loginDto.Email!) :
-                await _userManager.FindByNameAsync(loginDto.Username!);
+            var user = await _userManager.FindByEmailAsync(loginDto.EmailOrUsername!);
+            if (user == null)
+                user = await _userManager.FindByNameAsync(loginDto.EmailOrUsername!);
             if (user == null)
                 return Unauthorized("Invalid Login Details Provided");
             var result = _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);

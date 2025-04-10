@@ -27,7 +27,7 @@ namespace RockServers.Mappers
             {
                 Email = user.Email!,
                 Username = user.UserName!,
-                Psn = user.Psn!
+                Psn = user.GamerId!
             };
         }
 

@@ -8,7 +8,7 @@ namespace RockServers.Models
 {
     public class AppUser : IdentityUser
     {
-        public string? Psn { get; set; }
+        public string? GamerId { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
     }

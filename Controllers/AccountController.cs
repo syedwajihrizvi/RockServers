@@ -49,7 +49,6 @@ namespace RockServers.Controllers
                 Email = registerDto.Email,
                 FirstName = registerDto.FirstName,
                 LastName = registerDto.LastName,
-                Psn = registerDto.Psn,
                 UserName = registerDto.Username
             };
 

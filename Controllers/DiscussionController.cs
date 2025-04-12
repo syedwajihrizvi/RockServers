@@ -114,5 +114,16 @@ namespace RockServers.Controllers
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(Get), new { id = newDiscussion.Id }, newDiscussion);
         }
+
+        [HttpPatch("{discussionId:int}/updateLikes")]
+        public async Task<IActionResult> UpdateDiscussionLikes([FromRoute] int discussionId, [FromBody] bool increment)
+        {
+            var discussion = await _context.Discussions.Where(d => d.Id == discussionId).FirstOrDefaultAsync();
+            if (discussion == null)
+                return NotFound($"Discussion with {discussionId} does not exist");
+            discussion.Likes += increment ? 1 : 0;
+            await _context.SaveChangesAsync();
+            return Ok(discussion);
+        }
     }
 }

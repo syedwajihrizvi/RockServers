@@ -105,6 +105,7 @@ namespace RockServers.Controllers
                                      .ThenInclude(s => s.AppUser).FirstOrDefaultAsync();
             if (post == null)
                 return NotFound($"Post with {id} not found");
+            post.Comments = post.Comments.OrderByDescending(c => c.CommentedAt).ToList();
             return Ok(post.ToPostDto());
         }
 

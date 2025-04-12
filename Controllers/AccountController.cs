@@ -10,6 +10,8 @@ using RockServers.Mappers;
 using RockServers.Services;
 using RockServers.Interfaces;
 using RockServers.Extensions;
+using RockServers.Data;
+using Microsoft.EntityFrameworkCore;
 namespace RockServers.Controllers
 {
     [Route("api/accounts")]
@@ -17,14 +19,17 @@ namespace RockServers.Controllers
     public class AccountController : ControllerBase
     {
         private readonly UserManager<AppUser> _userManager;
+        private readonly ApplicationDBContext _context;
         private readonly ITokenService _tokenService;
         private readonly SignInManager<AppUser> _signInManager;
         public AccountController(
             UserManager<AppUser> userManager,
+            ApplicationDBContext context,
             ITokenService tokenService,
             SignInManager<AppUser> signInManager)
         {
             _userManager = userManager;
+            _context = context;
             _tokenService = tokenService;
             _signInManager = signInManager;
         }
@@ -35,7 +40,9 @@ namespace RockServers.Controllers
             var appUserId = User.GetUserId();
             if (appUserId == null)
                 return Unauthorized("Invalid User ID Provided");
-            var appUser = await _userManager.FindByIdAsync(appUserId);
+            // var appUser = await _userManager.FindByIdAsync(appUserId);
+            var appUser = await _context.Users.Where(u => u.Id == appUserId)
+                                              .Include(u => u.LikedPosts).FirstOrDefaultAsync();
             if (appUser == null)
                 return Unauthorized("Invalid User ID Provided");
             return Ok(appUser.ToUserInformationDto());

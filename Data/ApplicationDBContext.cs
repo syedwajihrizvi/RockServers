@@ -45,6 +45,15 @@ namespace RockServers.Data
                         .WithMany(p => p.Sessions)
                         .HasForeignKey(s => s.PostId)
                         .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Post>()
+                        .HasOne(p => p.AppUser)
+                        .WithMany()
+                        .HasForeignKey(p => p.AppUserId)
+                        .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Post>()
+                        .HasMany(p => p.LikedByUsers)
+                        .WithMany(a => a.LikedPosts)
+                        .UsingEntity(j => j.ToTable("PostLiked"));
         }
     }
 }

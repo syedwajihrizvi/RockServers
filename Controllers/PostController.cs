@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RockServers.Data;
@@ -19,9 +20,11 @@ namespace RockServers.Controllers
     public class PostController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
-        public PostController(ApplicationDBContext context)
+        private readonly UserManager<AppUser> _userManager;
+        public PostController(ApplicationDBContext context, UserManager<AppUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -149,6 +152,18 @@ namespace RockServers.Controllers
                 return NotFound($"Post with {postId} does not exist");
             post.Likes += increment ? 1 : -1;
             post.Likes = post.Dislikes < 0 ? 0 : post.Likes;
+            var appUserId = User.GetUserId();
+            if (appUserId == null)
+                return Unauthorized("User not valid");
+            var appUser = await _context.Users.Where(u => u.Id == appUserId)
+                                              .Include(u => u.LikedPosts)
+                                              .FirstOrDefaultAsync();
+            if (appUser == null)
+                return Unauthorized("User not valid");
+            if (increment)
+                appUser.LikedPosts.Add(post);
+            else
+                appUser.LikedPosts.Remove(post);
             await _context.SaveChangesAsync();
             return Ok(post);
         }

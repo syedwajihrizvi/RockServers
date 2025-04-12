@@ -17,7 +17,7 @@ namespace RockServers.Mappers
                 Id = user.Id,
                 Email = user.Email!,
                 Username = user.UserName!,
-                Token = token
+                Token = token,
             };
         }
 
@@ -38,6 +38,7 @@ namespace RockServers.Mappers
                 Id = user.Id!,
                 Email = user.Email!,
                 Username = user.UserName!,
+                LikedPosts = [.. user.LikedPosts.Select(p => p.Id)!]
             };
         }
     }

@@ -11,5 +11,7 @@ namespace RockServers.Models
         public string? GamerId { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
+        public List<Post> LikedPosts { get; set; } = [];
+        public List<Discussion> LikedDicussions { get; set; } = [];
     }
 }

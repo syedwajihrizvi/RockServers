@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using RockServers.Models;
 
 namespace RockServers.DTO.Accounts
 {
@@ -32,5 +33,6 @@ namespace RockServers.DTO.Accounts
         public string Id { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
+        public List<int> LikedPosts { get; set; } = [];
     }
 }

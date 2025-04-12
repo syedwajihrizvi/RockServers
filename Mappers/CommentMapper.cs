@@ -59,5 +59,15 @@ namespace RockServers.Mappers
                 Dislikes = discussionComment.Dislikes
             };
         }
+
+        public static DiscussionComment ToDiscussionCommentFromCreate(this CreateDiscussionCommentDto createDiscussionCommentDto, string appUserId)
+        {
+            return new DiscussionComment
+            {
+                Content = createDiscussionCommentDto.Content,
+                DiscussionId = createDiscussionCommentDto.DiscussionId,
+                AppUserId = appUserId
+            };
+        }
     }
 }

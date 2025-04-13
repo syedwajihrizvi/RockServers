@@ -35,6 +35,7 @@ namespace RockServers.Mappers
         {
             return new CommentDto
             {
+                Id = comment.Id,
                 Title = comment.Title,
                 Content = comment.Content,
                 CommentedBy = comment.AppUser!.UserName!,
@@ -49,7 +50,7 @@ namespace RockServers.Mappers
         {
             return new DiscussionCommentDto
             {
-
+                Id = discussionComment.Id,
                 Content = discussionComment.Content,
                 CommentedBy = discussionComment.AppUser!.UserName!,
                 AppUserId = discussionComment.AppUserId,

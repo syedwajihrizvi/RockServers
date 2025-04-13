@@ -17,6 +17,7 @@ namespace RockServers.DTO.Comments
 
     public class CommentDto
     {
+        public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public string CommentedBy { get; set; } = string.Empty;
@@ -28,6 +29,7 @@ namespace RockServers.DTO.Comments
 
     public class DiscussionCommentDto
     {
+        public int Id { get; set; }
         public string Content { get; set; } = string.Empty;
         public string CommentedBy { get; set; } = string.Empty;
         public string AppUserId { get; set; } = string.Empty;

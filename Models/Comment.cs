@@ -21,6 +21,7 @@ namespace RockServers.Models
         public AppUser? AppUser { get; set; }
         public int Likes { get; set; } = 0;
         public int Dislikes { get; set; } = 0;
+        public List<AppUser> LikedByUsers { get; set; } = [];
 
     }
 }

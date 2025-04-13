@@ -13,5 +13,7 @@ namespace RockServers.Models
         public string LastName { get; set; } = string.Empty;
         public List<Post> LikedPosts { get; set; } = [];
         public List<Discussion> LikedDicussions { get; set; } = [];
+        public List<Comment> LikedComments { get; set; } = [];
+        public List<DiscussionComment> LikedDiscussionComments { get; set; } = [];
     }
 }

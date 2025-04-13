@@ -44,6 +44,8 @@ namespace RockServers.Controllers
             var appUser = await _context.Users.Where(u => u.Id == appUserId)
                                               .Include(u => u.LikedPosts)
                                               .Include(u => u.LikedDicussions)
+                                              .Include(u => u.LikedComments)
+                                              .Include(u => u.LikedDiscussionComments)
                                               .FirstOrDefaultAsync();
             if (appUser == null)
                 return Unauthorized("Invalid User ID Provided");

@@ -39,7 +39,9 @@ namespace RockServers.Mappers
                 Email = user.Email!,
                 Username = user.UserName!,
                 LikedPosts = [.. user.LikedPosts.Select(p => p.Id)!],
-                LikedDiscussions = [.. user.LikedDicussions.Select(d => d.Id)!]
+                LikedDiscussions = [.. user.LikedDicussions.Select(d => d.Id)!],
+                LikedComments = [.. user.LikedComments.Select(c => c.Id)!],
+                LikedDiscussionComments = [.. user.LikedDiscussionComments.Select(d => d.Id)!]
             };
         }
     }

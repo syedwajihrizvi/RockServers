@@ -46,7 +46,7 @@ namespace RockServers.Helpers
 
     public class CommentQueryObject
     {
-        public int? PostId { get; set; }
+        public int? ContentId { get; set; }
         public bool Latest { get; set; }
         public bool SortByMostLikes { get; set; }
         public bool SortByMostDislikes { get; set; }

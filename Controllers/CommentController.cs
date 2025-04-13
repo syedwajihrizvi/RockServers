@@ -32,8 +32,8 @@ namespace RockServers.Controllers
             if (queryObject != null)
             {
 
-                if (queryObject.PostId != null)
-                    comments = comments.Where(c => c.PostId == queryObject.PostId);
+                if (queryObject.ContentId != null)
+                    comments = comments.Where(c => c.PostId == queryObject.ContentId);
 
                 // Sort by Most Likes or Dislikes
                 if (queryObject.SortByMostLikes == true)
@@ -88,18 +88,18 @@ namespace RockServers.Controllers
                 return base.NotFound($"Post with {comment} does not exist");
             comment.Likes += increment ? 1 : -1;
             comment.Likes = comment.Likes < 0 ? 0 : comment.Likes;
-            await _context.SaveChangesAsync();
-            return Ok(comment);
-        }
-
-        [HttpPatch("{commentId:int}/updateDislikes")]
-        public async Task<IActionResult> UpdatePostDislikes([FromRoute] int commentId, [FromBody] bool increment)
-        {
-            var comment = await _context.Comments.Where(c => c.Id == commentId).FirstOrDefaultAsync();
-            if (comment == null)
-                return base.NotFound($"Post with {comment} does not exist");
-            comment.Dislikes += increment ? 1 : -1;
-            comment.Dislikes = comment.Dislikes < 0 ? 0 : comment.Dislikes;
+            var appUserId = User.GetUserId();
+            if (appUserId == null)
+                return Unauthorized("User not valid");
+            var appUser = await _context.Users.Where(u => u.Id == appUserId)
+                                              .Include(u => u.LikedComments)
+                                              .FirstOrDefaultAsync();
+            if (appUser == null)
+                return Unauthorized("User not valid");
+            if (increment)
+                appUser.LikedComments.Add(comment);
+            else
+                appUser.LikedComments.Remove(comment);
             await _context.SaveChangesAsync();
             return Ok(comment);
         }

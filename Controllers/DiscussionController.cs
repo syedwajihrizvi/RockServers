@@ -121,7 +121,19 @@ namespace RockServers.Controllers
             var discussion = await _context.Discussions.Where(d => d.Id == discussionId).FirstOrDefaultAsync();
             if (discussion == null)
                 return NotFound($"Discussion with {discussionId} does not exist");
-            discussion.Likes += increment ? 1 : 0;
+            discussion.Likes += increment ? 1 : -1;
+            var appUserId = User.GetUserId();
+            if (appUserId == null)
+                return Unauthorized("User not valid");
+            var appUser = await _context.Users.Where(u => u.Id == appUserId)
+                                              .Include(u => u.LikedDicussions)
+                                              .FirstOrDefaultAsync();
+            if (appUser == null)
+                return Unauthorized("User not valid");
+            if (increment)
+                appUser.LikedDicussions.Add(discussion);
+            else
+                appUser.LikedDicussions.Remove(discussion);
             await _context.SaveChangesAsync();
             return Ok(discussion);
         }

@@ -34,5 +34,6 @@ namespace RockServers.DTO.Accounts
         public string Email { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
         public List<int> LikedPosts { get; set; } = [];
+        public List<int> LikedDiscussions { get; set; } = [];
     }
 }

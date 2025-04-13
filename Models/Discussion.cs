@@ -22,5 +22,6 @@ namespace RockServers.Models
         public List<DiscussionComment> DiscussionComments { get; set; } = [];
         public int Likes { get; set; } = 0;
         public int Views { get; set; } = 0;
+        public List<AppUser> LikedByUsers { get; set; } = [];
     }
 }

@@ -42,7 +42,9 @@ namespace RockServers.Controllers
                 return Unauthorized("Invalid User ID Provided");
             // var appUser = await _userManager.FindByIdAsync(appUserId);
             var appUser = await _context.Users.Where(u => u.Id == appUserId)
-                                              .Include(u => u.LikedPosts).FirstOrDefaultAsync();
+                                              .Include(u => u.LikedPosts)
+                                              .Include(u => u.LikedDicussions)
+                                              .FirstOrDefaultAsync();
             if (appUser == null)
                 return Unauthorized("Invalid User ID Provided");
             return Ok(appUser.ToUserInformationDto());

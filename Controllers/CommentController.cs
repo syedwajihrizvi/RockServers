@@ -133,7 +133,7 @@ namespace RockServers.Controllers
                 return NotFound($"Comment with {commentId} not found");
             _context.Remove(comment);
             await _context.SaveChangesAsync();
-            return NoContent();
+            return Ok(comment);
         }
     }
 }

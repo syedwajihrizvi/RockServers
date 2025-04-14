@@ -15,6 +15,7 @@ namespace RockServers.Mappers
             {
                 Id = discussion.Id,
                 Title = discussion.Title,
+                PostedAt = discussion.PostedAt,
                 Content = discussion.Content,
                 ImagePath = discussion.ImagePath,
                 AppUserId = discussion.AppUserId,
@@ -30,6 +31,7 @@ namespace RockServers.Mappers
             {
                 Id = discussion.Id,
                 Title = discussion.Title,
+                PostedAt = discussion.PostedAt,
                 Content = discussion.Content,
                 GameId = discussion.GameId,
                 GameName = discussion.Game!.Title,

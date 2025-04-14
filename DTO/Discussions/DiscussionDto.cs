@@ -11,6 +11,7 @@ namespace RockServers.DTO.Discussions
     {
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
+        public DateTime PostedAt { get; set; }
         public string Content { get; set; } = string.Empty;
         public string ImagePath { get; set; } = string.Empty;
         public string? AppUserId { get; set; }
@@ -23,6 +24,7 @@ namespace RockServers.DTO.Discussions
     {
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
+        public DateTime PostedAt { get; set; }
         public string Content { get; set; } = string.Empty;
         public int? GameId { get; set; }
         public string GameName { get; set; } = string.Empty;

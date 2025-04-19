@@ -10,6 +10,7 @@ using RockServers.Models;
 using Newtonsoft.Json;
 using RockServers.Interfaces;
 using RockServers.Services;
+using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

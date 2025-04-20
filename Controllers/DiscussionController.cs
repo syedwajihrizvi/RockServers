@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Formats.Webp;
 using RockServers.Data;
 using RockServers.DTO.Discussions;
 using RockServers.Extensions;
@@ -90,6 +93,56 @@ namespace RockServers.Controllers
             return Ok(discussion.ToGetDiscussionDto());
         }
 
+        [HttpPost("customImage")]
+        [Authorize]
+        public async Task<IActionResult> CreateWithCustomImage([FromForm] CreateDiscussionDtoWithCustomImage createDiscussionDto)
+        {
+            var gameId = createDiscussionDto.GameId;
+            var game = await _context.Games.Where(g => g.Id == gameId).FirstOrDefaultAsync();
+            if (game == null)
+                return NotFound($"Game with ID {gameId} not found");
+            var appUserId = User.GetUserId();
+            if (appUserId == null)
+                return NotFound("Invalid User ID Provided");
+            var imageFile = createDiscussionDto.ImageFile;
+            if (imageFile == null || imageFile.Length == 0)
+                return BadRequest("No file found in request");
+            // Extract the main image into a path first
+            var fileName = Path.GetFileNameWithoutExtension(imageFile.FileName);
+            var outputpath = Path.Combine("wwwroot/uploads/post_images", $"{fileName}.webp");
+            using var image = await Image.LoadAsync(imageFile.OpenReadStream());
+            await image.SaveAsync(outputpath, new WebpEncoder());
+            var publicUrl = $"/uploads/post_images/{fileName}.webp";
+
+            // Extract the other images
+            List<string> otherImages = [];
+            if (createDiscussionDto.OtherImages.Length > 0)
+            {
+                foreach (var img in createDiscussionDto.OtherImages)
+                {
+                    var otherImageFileName = Path.GetFileNameWithoutExtension(img.FileName);
+                    var otherImageFileOutputPath = Path.Combine("wwwroot/uploads/post_images", $"{otherImageFileName}.webp");
+                    using var otherImage = await Image.LoadAsync(img.OpenReadStream());
+                    await otherImage.SaveAsync(otherImageFileOutputPath, new WebpEncoder());
+                    var imgPublicUrl = $"/uploads/post_images/{otherImageFileName}.webp";
+                    otherImages.Add(otherImageFileName);
+                }
+            }
+            var newDiscussion = new Discussion
+            {
+                Title = createDiscussionDto.Title,
+                Content = createDiscussionDto.Content,
+                AppUserId = appUserId,
+                GameId = createDiscussionDto.GameId,
+                ImagePath = fileName,
+                OtherImages = otherImages
+            };
+
+            await _context.Discussions.AddAsync(newDiscussion);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction(nameof(Get), new { id = newDiscussion.Id }, newDiscussion);
+        }
+
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Create([FromBody] CreateDiscussionDto createDiscussionDto)
@@ -107,7 +160,8 @@ namespace RockServers.Controllers
                 Title = createDiscussionDto.Title,
                 Content = createDiscussionDto.Content,
                 AppUserId = appUserId,
-                GameId = createDiscussionDto.GameId
+                GameId = createDiscussionDto.GameId,
+
             };
 
             await _context.Discussions.AddAsync(newDiscussion);

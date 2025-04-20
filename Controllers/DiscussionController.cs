@@ -145,7 +145,7 @@ namespace RockServers.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Create([FromBody] CreateDiscussionDto createDiscussionDto)
+        public async Task<IActionResult> Create([FromForm] CreateDiscussionDto createDiscussionDto)
         {
             var gameId = createDiscussionDto.GameId;
             var game = await _context.Games.Where(g => g.Id == gameId).FirstOrDefaultAsync();
@@ -154,13 +154,28 @@ namespace RockServers.Controllers
             var appUserId = User.GetUserId();
             if (appUserId == null)
                 return NotFound("Invalid User ID Provided");
-
+            // Extract the other images
+            List<string> otherImages = [];
+            if (createDiscussionDto.OtherImages.Length > 0)
+            {
+                foreach (var img in createDiscussionDto.OtherImages)
+                {
+                    var otherImageFileName = Path.GetFileNameWithoutExtension(img.FileName);
+                    var otherImageFileOutputPath = Path.Combine("wwwroot/uploads/post_images", $"{otherImageFileName}.webp");
+                    using var otherImage = await Image.LoadAsync(img.OpenReadStream());
+                    await otherImage.SaveAsync(otherImageFileOutputPath, new WebpEncoder());
+                    var imgPublicUrl = $"/uploads/post_images/{otherImageFileName}.webp";
+                    otherImages.Add(otherImageFileName);
+                }
+            }
             var newDiscussion = new Discussion
             {
                 Title = createDiscussionDto.Title,
                 Content = createDiscussionDto.Content,
                 AppUserId = appUserId,
                 GameId = createDiscussionDto.GameId,
+                ImagePath = createDiscussionDto.ImagePath,
+                OtherImages = otherImages
 
             };
 

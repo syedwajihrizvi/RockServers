@@ -87,6 +87,14 @@ namespace RockServers.Data
                         .WithMany()
                         .HasForeignKey(c => c.AppUserId)
                         .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<AppUser>()
+                        .HasMany(u => u.Following)
+                        .WithMany(u => u.Followers)
+                        .UsingEntity<Dictionary<string, object>>(
+                            "UserFollow",
+                            j => j.HasOne<AppUser>().WithMany().HasForeignKey("FollowedId").OnDelete(DeleteBehavior.Cascade),
+                            j => j.HasOne<AppUser>().WithMany().HasForeignKey("FollowerId").OnDelete(DeleteBehavior.Cascade)
+                        );
 
         }
     }

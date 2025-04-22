@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using SixLabors.ImageSharp;
 
 namespace RockServers.Models
 {
@@ -15,5 +16,7 @@ namespace RockServers.Models
         public List<Discussion> LikedDicussions { get; set; } = [];
         public List<Comment> LikedComments { get; set; } = [];
         public List<DiscussionComment> LikedDiscussionComments { get; set; } = [];
+        public List<AppUser> Following { get; set; } = [];
+        public List<AppUser> Followers { get; set; } = [];
     }
 }

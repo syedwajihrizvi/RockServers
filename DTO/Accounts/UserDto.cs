@@ -37,5 +37,11 @@ namespace RockServers.DTO.Accounts
         public List<int> LikedDiscussions { get; set; } = [];
         public List<int> LikedComments { get; set; } = [];
         public List<int> LikedDiscussionComments { get; set; } = [];
+        public List<string> Following { get; set; } = [];
+    }
+
+    public class FollowDto
+    {
+        public string Username { get; set; } = string.Empty;
     }
 }

@@ -46,6 +46,7 @@ namespace RockServers.Controllers
                                               .Include(u => u.LikedDicussions)
                                               .Include(u => u.LikedComments)
                                               .Include(u => u.LikedDiscussionComments)
+                                              .Include(u => u.Following)
                                               .FirstOrDefaultAsync();
             if (appUser == null)
                 return Unauthorized("Invalid User ID Provided");
@@ -107,6 +108,26 @@ namespace RockServers.Controllers
                     Token = _tokenService.CreateToken(user)
                 });
             return Unauthorized("Invalid Login Details Provided");
+        }
+
+        [HttpPatch("follow")]
+        public async Task<IActionResult> Follow([FromForm] FollowDto followDto)
+        {
+            var user = await _context.Users.Where(u => u.UserName == followDto.Username)
+                                           .Include(u => u.Followers).FirstOrDefaultAsync();
+            if (user == null)
+                return NotFound("The user requested to follow was not found");
+            var currentUserId = User.GetUserId();
+            if (currentUserId == null)
+                return Unauthorized("Unauthorized request");
+            var currentUser = await _userManager.FindByIdAsync(currentUserId);
+            if (currentUser == null)
+                return Unauthorized("User not found");
+            if (user.Followers.Contains(currentUser))
+                return BadRequest("Cannot follow user that is already being followed");
+            user.Followers.Add(currentUser);
+            await _context.SaveChangesAsync();
+            return Ok();
         }
     }
 }

@@ -41,7 +41,8 @@ namespace RockServers.Mappers
                 LikedPosts = [.. user.LikedPosts.Select(p => p.Id)!],
                 LikedDiscussions = [.. user.LikedDicussions.Select(d => d.Id)!],
                 LikedComments = [.. user.LikedComments.Select(c => c.Id)!],
-                LikedDiscussionComments = [.. user.LikedDiscussionComments.Select(d => d.Id)!]
+                LikedDiscussionComments = [.. user.LikedDiscussionComments.Select(d => d.Id)!],
+                Following = [.. user.Following.Select(u => u.UserName)]
             };
         }
     }

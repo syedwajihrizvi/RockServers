@@ -62,6 +62,9 @@ namespace RockServers.Controllers
                         discussions = discussions.OrderByDescending(d => d.Views);
                 }
 
+                if (!string.IsNullOrWhiteSpace(queryObject.UserId))
+                    discussions = discussions.Where(d => d.AppUserId == queryObject.UserId);
+
                 // Check for limit
                 if (queryObject.Limit != null)
                     discussions = discussions.Take((int)queryObject.Limit);

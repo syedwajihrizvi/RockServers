@@ -50,8 +50,8 @@ namespace RockServers.Controllers
                     posts = posts.Where(p => p.Description.ToLower().Contains(queryObject.Description.ToLower()));
                 if (queryObject.GameId != null)
                     posts = posts.Where(p => p.GameId == queryObject.GameId);
-                if (!string.IsNullOrWhiteSpace(queryObject.AppUserId))
-                    posts = posts.Where(p => p.AppUserId == queryObject.AppUserId);
+                if (!string.IsNullOrWhiteSpace(queryObject.UserId))
+                    posts = posts.Where(p => p.AppUserId == queryObject.UserId);
                 if (queryObject.PlatformId != null)
                     posts = posts.Where(p => p.PlatformId == queryObject.PlatformId);
 
@@ -68,6 +68,9 @@ namespace RockServers.Controllers
 
                 if (queryObject.SessionType == "joinable")
                     posts = posts.Where(p => !p.Sessions.Any(s => s.EndTime == null));
+
+                if (!string.IsNullOrWhiteSpace(queryObject.UserId))
+                    posts = posts.Where(p => p.AppUserId == queryObject.UserId);
 
                 // If there is a limit
                 if (queryObject.Limit != null)

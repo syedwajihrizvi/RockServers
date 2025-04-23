@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using RockServers.Models;
+using SixLabors.ImageSharp;
 
 namespace RockServers.DTO.Accounts
 {
@@ -38,6 +39,7 @@ namespace RockServers.DTO.Accounts
         public List<int> LikedComments { get; set; } = [];
         public List<int> LikedDiscussionComments { get; set; } = [];
         public List<string> Following { get; set; } = [];
+        public int? TotalPostings { get; set; }
     }
 
     public class FollowDto

@@ -25,7 +25,7 @@ namespace RockServers.Helpers
         public string? SearchValue { get; set; }
         public int? PostToRemoveId { get; set; }
         public int? PlatformId { get; set; }
-        public string AppUserId { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
         public string SessionType { get; set; } = string.Empty;
         public string OrderBy { get; set; } = string.Empty;
         public bool MostRecent { get; set; }
@@ -37,6 +37,7 @@ namespace RockServers.Helpers
         public int? GameId { get; set; }
         public string? SearchValue { get; set; }
         public int? DiscussionToRemoveId { get; set; }
+        public string UserId { get; set; } = string.Empty;
         public string OrderBy { get; set; } = string.Empty;
         public bool MostRecent { get; set; }
         public int? Limit { get; set; }

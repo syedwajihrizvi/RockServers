@@ -49,14 +49,12 @@ namespace RockServers.Controllers
                                               .Include(u => u.Following)
                                               .FirstOrDefaultAsync();
             // Find posts and discussions made by the user
-            Console.WriteLine($"Looking for {appUserId}");
             var posts = await _context.Posts.Where(p => p.AppUserId == appUserId).ToListAsync();
             var discussions = await _context.Discussions.Where(d => d.AppUserId == appUserId).ToListAsync();
             if (appUser == null)
                 return Unauthorized("Invalid User ID Provided");
             var appUserDto = appUser.ToUserInformationDto();
             appUserDto.TotalPostings = posts.Count + discussions.Count;
-            Console.WriteLine(appUserDto.TotalPostings);
             return Ok(appUserDto);
         }
 

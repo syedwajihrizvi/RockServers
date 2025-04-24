@@ -42,7 +42,17 @@ namespace RockServers.Mappers
                 LikedDiscussions = [.. user.LikedDicussions.Select(d => d.Id)!],
                 LikedComments = [.. user.LikedComments.Select(c => c.Id)!],
                 LikedDiscussionComments = [.. user.LikedDiscussionComments.Select(d => d.Id)!],
-                Following = [.. user.Following.Select(u => u.UserName)]
+                Following = [.. user.Following.Select(u => u.ToMinimalUserInformationDto())],
+                Followers = [.. user.Followers.Select(u => u.ToMinimalUserInformationDto())]
+            };
+        }
+
+        public static MinimalUserInformationDto ToMinimalUserInformationDto(this AppUser user)
+        {
+            return new MinimalUserInformationDto
+            {
+                Id = user.Id,
+                Username = user.UserName!
             };
         }
     }

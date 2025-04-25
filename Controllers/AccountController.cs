@@ -47,10 +47,30 @@ namespace RockServers.Controllers
                                               .Include(u => u.LikedComments)
                                               .Include(u => u.LikedDiscussionComments)
                                               .Include(u => u.Following)
+                                              .Include(u => u.Followers)
                                               .FirstOrDefaultAsync();
             // Find posts and discussions made by the user
             var posts = await _context.Posts.Where(p => p.AppUserId == appUserId).ToListAsync();
             var discussions = await _context.Discussions.Where(d => d.AppUserId == appUserId).ToListAsync();
+            if (appUser == null)
+                return Unauthorized("Invalid User ID Provided");
+            var appUserDto = appUser.ToUserInformationDto();
+            appUserDto.TotalPostings = posts.Count + discussions.Count;
+            return Ok(appUserDto);
+        }
+
+        [HttpGet("profile/{appUsername}")]
+        public async Task<IActionResult> GetProfileInfo([FromRoute] string appUsername)
+        {
+            var appUser = await _context.Users.Where(u => u.UserName == appUsername)
+                                              .Include(u => u.Following)
+                                              .Include(u => u.Followers)
+                                              .FirstOrDefaultAsync();
+            if (appUser == null)
+                return NotFound($"User with {appUsername} does not exist");
+            // Find posts and discussions made by the users
+            var posts = await _context.Posts.Where(p => p.AppUserId == appUsername).ToListAsync();
+            var discussions = await _context.Discussions.Where(d => d.AppUserId == appUsername).ToListAsync();
             if (appUser == null)
                 return Unauthorized("Invalid User ID Provided");
             var appUserDto = appUser.ToUserInformationDto();

@@ -156,5 +156,36 @@ namespace RockServers.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+
+        [HttpPatch("update/{field}")]
+        public async Task<IActionResult> UpdateField([FromRoute] string field, [FromForm] UpdateUserDto updateUser)
+        {
+            var appUserId = User.GetUserId();
+            var appUser = await _context.Users.Where(u => u.Id == appUserId).FirstOrDefaultAsync();
+            if (appUser == null)
+                return Unauthorized("Invalid user provided");
+            var passwordResult = _signInManager.CheckPasswordSignInAsync(appUser, updateUser.ConfirmPassword, false);
+            if (!passwordResult.IsCompletedSuccessfully)
+                return Unauthorized("Invalid user credentials");
+            if (field == "email")
+            {
+                appUser.Email = updateUser.Email;
+                await _context.SaveChangesAsync();
+                return Ok(appUser.ToUserInformationDto());
+            }
+            else if (field == "username")
+            {
+                appUser.UserName = updateUser.Username;
+                await _context.SaveChangesAsync();
+                return Ok(appUser.ToUserInformationDto());
+            }
+            else if (field == "password")
+            {
+                var result = await _userManager.ChangePasswordAsync(appUser, updateUser.Password, updateUser.Password);
+                if (result.Succeeded)
+                    return Ok(appUser.ToUserInformationDto());
+            }
+            return BadRequest("Field type not supported.");
+        }
     }
 }

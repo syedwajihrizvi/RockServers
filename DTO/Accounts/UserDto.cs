@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
@@ -53,4 +54,13 @@ namespace RockServers.DTO.Accounts
     {
         public string Username { get; set; } = string.Empty;
     }
+
+    public class UpdateUserDto
+    {
+        [Required]
+        public string ConfirmPassword { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    };
 }

@@ -24,6 +24,7 @@ namespace RockServers.Data
         public DbSet<DiscussionComment> DiscussionComments { get; set; }
         public DbSet<Session> Sessions { get; set; }
         public DbSet<SessionUser> SessionUsers { get; set; }
+        public DbSet<Avatar> Avatars { get; set; }
 
         public DbSet<Platform> Platforms { get; set; }
         public DbSet<Discussion> Discussions { get; set; }

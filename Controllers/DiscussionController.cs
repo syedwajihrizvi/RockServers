@@ -73,6 +73,7 @@ namespace RockServers.Controllers
 
             var discussionDtos = await discussions.Include(d => d.Game)
                                            .Include(d => d.AppUser)
+                                           .ThenInclude(a => a!.Avatar)
                                            .Include(d => d.DiscussionComments)
                                            .Select(d => d.ToDiscussionDto())
                                            .ToListAsync();
@@ -85,6 +86,7 @@ namespace RockServers.Controllers
             var discussion = await _context.Discussions.Where(d => d.Id == id)
                                                        .Include(d => d.Game)
                                                        .Include(d => d.AppUser)
+                                                       .ThenInclude(a => a!.Avatar)
                                                        .Include(d => d.DiscussionComments)
                                                        .ThenInclude(c => c.AppUser)
                                                        .Include(d => d.DiscussionComments)

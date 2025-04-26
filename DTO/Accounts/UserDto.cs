@@ -16,6 +16,7 @@ namespace RockServers.DTO.Accounts
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string Token { get; set; } = string.Empty;
+        public string Avatar { get; set; } = string.Empty;
     }
 
     public class UserDto : BaseUserDto
@@ -28,6 +29,7 @@ namespace RockServers.DTO.Accounts
         public string Email { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
         public string Psn { get; set; } = string.Empty;
+        public string Avatar { get; set; } = string.Empty;
     }
 
     public class UserInformationDto
@@ -35,6 +37,7 @@ namespace RockServers.DTO.Accounts
         public string Id { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
+        public string Avatar { get; set; } = string.Empty;
         public List<int> LikedPosts { get; set; } = [];
         public List<int> LikedDiscussions { get; set; } = [];
         public List<int> LikedComments { get; set; } = [];
@@ -48,6 +51,7 @@ namespace RockServers.DTO.Accounts
     {
         public string Id { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
+        public string Avatar { get; set; } = string.Empty;
     }
 
     public class FollowDto

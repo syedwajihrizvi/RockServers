@@ -89,9 +89,11 @@ namespace RockServers.Controllers
 
             var postsDtos = await posts.Include(p => p.Game)
                                  .Include(p => p.AppUser)
+                                 .ThenInclude(a => a!.Avatar)
                                  .Include(p => p.Platform)
                                  .Include(p => p.Comments)
                                  .ThenInclude(c => c.AppUser)
+                                 .ThenInclude(a => a!.Avatar)
                                  .Include(p => p.Sessions)
                                  .ThenInclude(s => s.Users)
                                  .ThenInclude(s => s.AppUser)
@@ -106,9 +108,11 @@ namespace RockServers.Controllers
             var post = await _context.Posts.Where(p => p.Id == id)
                                      .Include(p => p.Game)
                                      .Include(p => p.AppUser)
+                                     .ThenInclude(a => a!.Avatar)
                                      .Include(p => p.Platform)
                                      .Include(p => p.Comments)
                                      .ThenInclude(c => c.AppUser)
+                                     .ThenInclude(a => a!.Avatar)
                                      .Include(p => p.Sessions)
                                      .ThenInclude(s => s.Users)
                                      .ThenInclude(s => s.AppUser).FirstOrDefaultAsync();

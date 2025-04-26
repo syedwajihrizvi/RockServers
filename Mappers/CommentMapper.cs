@@ -40,6 +40,7 @@ namespace RockServers.Mappers
                 Content = comment.Content,
                 CommentedBy = comment.AppUser!.UserName!,
                 AppUserId = comment.AppUserId!,
+                Avatar = comment.AppUser.Avatar!.Name,
                 CommentedAt = comment.CommentedAt,
                 Likes = comment.Likes,
                 Dislikes = comment.Dislikes

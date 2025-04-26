@@ -49,6 +49,7 @@ namespace RockServers.Controllers
                 comments = comments.OrderByDescending(c => c.CommentedAt);
             }
             var commentsDto = await comments.Include(c => c.AppUser)
+                                            .ThenInclude(a => a!.Avatar)
                                             .Select(c => c.ToCommentDto())
                                             .ToListAsync();
             return Ok(commentsDto);

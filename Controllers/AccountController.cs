@@ -43,11 +43,14 @@ namespace RockServers.Controllers
             // var appUser = await _userManager.FindByIdAsync(appUserId);
             var appUser = await _context.Users.Where(u => u.Id == appUserId)
                                               .Include(u => u.LikedPosts)
+                                              .Include(u => u.Avatar)
                                               .Include(u => u.LikedDicussions)
                                               .Include(u => u.LikedComments)
                                               .Include(u => u.LikedDiscussionComments)
                                               .Include(u => u.Following)
+                                              .ThenInclude(a => a.Avatar)
                                               .Include(u => u.Followers)
+                                              .ThenInclude(a => a.Avatar)
                                               .FirstOrDefaultAsync();
             // Find posts and discussions made by the user
             var posts = await _context.Posts.Where(p => p.AppUserId == appUserId).ToListAsync();
@@ -63,8 +66,11 @@ namespace RockServers.Controllers
         public async Task<IActionResult> GetProfileInfo([FromRoute] string appUsername)
         {
             var appUser = await _context.Users.Where(u => u.UserName == appUsername)
+                                              .Include(u => u.Avatar)
                                               .Include(u => u.Following)
+                                              .ThenInclude(a => a.Avatar)
                                               .Include(u => u.Followers)
+                                              .ThenInclude(a => a.Avatar)
                                               .FirstOrDefaultAsync();
             if (appUser == null)
                 return NotFound($"User with {appUsername} does not exist");

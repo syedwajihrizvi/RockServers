@@ -10,13 +10,14 @@ namespace RockServers.Mappers
 {
     public static class AccountMappers
     {
-        public static UserDto ToCreatedUserDto(this IdentityUser user, string token)
+        public static UserDto ToCreatedUserDto(this AppUser user, string token)
         {
             return new UserDto
             {
                 Id = user.Id,
                 Email = user.Email!,
                 Username = user.UserName!,
+                Avatar = user.Avatar?.Name!,
                 Token = token,
             };
         }
@@ -27,7 +28,8 @@ namespace RockServers.Mappers
             {
                 Email = user.Email!,
                 Username = user.UserName!,
-                Psn = user.GamerId!
+                Psn = user.GamerId!,
+                Avatar = user.Avatar?.Name!
             };
         }
 
@@ -38,6 +40,7 @@ namespace RockServers.Mappers
                 Id = user.Id!,
                 Email = user.Email!,
                 Username = user.UserName!,
+                Avatar = user.Avatar?.Name!,
                 LikedPosts = [.. user.LikedPosts.Select(p => p.Id)!],
                 LikedDiscussions = [.. user.LikedDicussions.Select(d => d.Id)!],
                 LikedComments = [.. user.LikedComments.Select(c => c.Id)!],
@@ -52,7 +55,8 @@ namespace RockServers.Mappers
             return new MinimalUserInformationDto
             {
                 Id = user.Id,
-                Username = user.UserName!
+                Username = user.UserName!,
+                Avatar = user.Avatar!.Name
             };
         }
     }

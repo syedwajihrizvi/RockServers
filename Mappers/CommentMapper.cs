@@ -55,6 +55,7 @@ namespace RockServers.Mappers
                 Content = discussionComment.Content,
                 CommentedBy = discussionComment.AppUser!.UserName!,
                 AppUserId = discussionComment.AppUserId,
+                Avatar = discussionComment.AppUser.Avatar!.Name,
                 Replies = [.. discussionComment.Replies.Select(s => s.ToReplyDto())],
                 CommentedAt = discussionComment.CommentedAt,
                 Likes = discussionComment.Likes,

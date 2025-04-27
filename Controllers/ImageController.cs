@@ -19,10 +19,17 @@ namespace RockServers.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] int gameId)
+        public async Task<IActionResult> GetImages([FromQuery] int gameId)
         {
             var images = await _context.Images.Where(i => i.GameId == gameId).ToListAsync();
             return Ok(images);
+        }
+
+        [HttpGet("avatars")]
+        public async Task<IActionResult> GetAvatars()
+        {
+            var avatars = await _context.Avatars.ToListAsync();
+            return Ok(avatars);
         }
     }
 }

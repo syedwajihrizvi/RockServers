@@ -89,6 +89,7 @@ namespace RockServers.Controllers
                                                        .ThenInclude(a => a!.Avatar)
                                                        .Include(d => d.DiscussionComments)
                                                        .ThenInclude(c => c.AppUser)
+                                                       .ThenInclude(a => a!.Avatar)
                                                        .Include(d => d.DiscussionComments)
                                                        .ThenInclude(c => c.Replies)
                                                        .ThenInclude(r => r.AppUser)

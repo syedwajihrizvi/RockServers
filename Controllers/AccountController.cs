@@ -85,7 +85,7 @@ namespace RockServers.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
+        public async Task<IActionResult> Register([FromForm] RegisterDto registerDto)
         {
             // Create the user
             var newUser = new AppUser
@@ -96,6 +96,18 @@ namespace RockServers.Controllers
                 UserName = registerDto.Username
             };
 
+            // Process the image
+            if (registerDto.Avatar != null)
+            {
+                var avatar = await _context.Avatars.Where(a => a.Name == registerDto.Avatar).FirstOrDefaultAsync();
+                if (avatar == null)
+                    return NotFound("Invalid avatar Id sent");
+                newUser.Avatar = avatar;
+            }
+            else
+            {
+                Console.WriteLine("User sent own data");
+            }
             if (registerDto.Password != null)
             {
                 // Execute creation of user

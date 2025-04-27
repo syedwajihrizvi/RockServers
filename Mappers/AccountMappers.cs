@@ -18,6 +18,7 @@ namespace RockServers.Mappers
                 Email = user.Email!,
                 Username = user.UserName!,
                 Avatar = user.Avatar?.Name!,
+                ProfileImage = user.ProfileImage,
                 Token = token,
             };
         }
@@ -29,7 +30,8 @@ namespace RockServers.Mappers
                 Email = user.Email!,
                 Username = user.UserName!,
                 Psn = user.GamerId!,
-                Avatar = user.Avatar?.Name!
+                Avatar = user.Avatar?.Name!,
+                ProfileImage = user.ProfileImage
             };
         }
 
@@ -41,6 +43,7 @@ namespace RockServers.Mappers
                 Email = user.Email!,
                 Username = user.UserName!,
                 Avatar = user.Avatar?.Name!,
+                ProfileImage = user.ProfileImage,
                 LikedPosts = [.. user.LikedPosts.Select(p => p.Id)!],
                 LikedDiscussions = [.. user.LikedDicussions.Select(d => d.Id)!],
                 LikedComments = [.. user.LikedComments.Select(c => c.Id)!],
@@ -56,7 +59,8 @@ namespace RockServers.Mappers
             {
                 Id = user.Id,
                 Username = user.UserName!,
-                Avatar = user.Avatar!.Name
+                Avatar = user.Avatar!.Name,
+                ProfileImage = user.ProfileImage!,
             };
         }
     }

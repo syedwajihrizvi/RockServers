@@ -23,11 +23,9 @@ namespace RockServers.Controllers
     public class PostController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
-        private readonly UserManager<AppUser> _userManager;
-        public PostController(ApplicationDBContext context, UserManager<AppUser> userManager)
+        public PostController(ApplicationDBContext context)
         {
             _context = context;
-            _userManager = userManager;
         }
 
         [HttpGet]

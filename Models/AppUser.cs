@@ -14,6 +14,7 @@ namespace RockServers.Models
         public string LastName { get; set; } = string.Empty;
         public int? AvatarId { get; set; }
         public Avatar? Avatar { get; set; }
+        public string ProfileImage { get; set; } = string.Empty;
         public List<Post> LikedPosts { get; set; } = [];
         public List<Discussion> LikedDicussions { get; set; } = [];
         public List<Comment> LikedComments { get; set; } = [];

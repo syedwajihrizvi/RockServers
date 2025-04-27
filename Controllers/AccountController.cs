@@ -106,7 +106,7 @@ namespace RockServers.Controllers
             }
             else
             {
-                Console.WriteLine("User sent own data");
+                Console.WriteLine("Custom Image sent");
             }
             if (registerDto.Password != null)
             {

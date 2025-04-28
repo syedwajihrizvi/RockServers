@@ -21,7 +21,9 @@ namespace RockServers.Data
         public DbSet<Game> Games { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<CommentReply> CommentReplies { get; set; }
         public DbSet<DiscussionComment> DiscussionComments { get; set; }
+        public DbSet<Reply> Replies { get; set; }
         public DbSet<Session> Sessions { get; set; }
         public DbSet<SessionUser> SessionUsers { get; set; }
         public DbSet<Avatar> Avatars { get; set; }

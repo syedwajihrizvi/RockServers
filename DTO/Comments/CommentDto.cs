@@ -7,15 +7,6 @@ using RockServers.Models;
 
 namespace RockServers.DTO.Comments
 {
-    public class ReplyDto
-    {
-        public string Content { get; set; } = string.Empty;
-        public DateTime RepliedAt { get; set; } = DateTime.Now;
-        public string? AppUserId { get; set; } = string.Empty;
-        public string CommentedBy { get; set; } = string.Empty;
-
-    }
-
     public class CommentDto
     {
         public int Id { get; set; }
@@ -23,10 +14,10 @@ namespace RockServers.DTO.Comments
         public string Content { get; set; } = string.Empty;
         public string CommentedBy { get; set; } = string.Empty;
         public MinimalUserInformationDto? AppUser { get; set; }
-        public string Avatar { get; set; } = string.Empty;
         public DateTime CommentedAt { get; set; } = DateTime.Now;
         public int Likes { get; set; }
         public int Dislikes { get; set; }
+        public List<ReplyDto> Replies { get; set; } = [];
     }
 
     public class DiscussionCommentDto
@@ -36,7 +27,6 @@ namespace RockServers.DTO.Comments
         public string CommentedBy { get; set; } = string.Empty;
         public MinimalUserInformationDto? AppUser { get; set; }
         public string Avatar { get; set; } = string.Empty;
-        public List<ReplyDto> Replies { get; set; } = [];
         public DateTime CommentedAt { get; set; } = DateTime.Now;
         public int Likes { get; set; }
         public int Dislikes { get; set; }

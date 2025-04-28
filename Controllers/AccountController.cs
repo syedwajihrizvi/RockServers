@@ -12,6 +12,8 @@ using RockServers.Interfaces;
 using RockServers.Extensions;
 using RockServers.Data;
 using Microsoft.EntityFrameworkCore;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Webp;
 namespace RockServers.Controllers
 {
     [Route("api/accounts")]
@@ -106,8 +108,16 @@ namespace RockServers.Controllers
             }
             else
             {
-                Console.WriteLine("Custom Image sent");
+                var imageFile = registerDto.ImageFile;
+                if (imageFile == null || imageFile.Length == 0)
+                    return BadRequest("No profile image or avatar provided");
+                var fileName = Path.GetFileNameWithoutExtension(imageFile.FileName);
+                var outputPath = Path.Combine("wwwroot/uploads/profile_images", $"{fileName}.webp");
+                using var image = await Image.LoadAsync(imageFile.OpenReadStream());
+                await image.SaveAsync(outputPath, new WebpEncoder());
+                newUser.ProfileImage = fileName;
             }
+
             if (registerDto.Password != null)
             {
                 // Execute creation of user

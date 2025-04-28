@@ -48,8 +48,8 @@ namespace RockServers.Mappers
                 LikedDiscussions = [.. user.LikedDicussions.Select(d => d.Id)!],
                 LikedComments = [.. user.LikedComments.Select(c => c.Id)!],
                 LikedDiscussionComments = [.. user.LikedDiscussionComments.Select(d => d.Id)!],
-                Following = [.. user.Following.Select(u => u.ToMinimalUserInformationDto())],
-                Followers = [.. user.Followers.Select(u => u.ToMinimalUserInformationDto())]
+                Following = [.. user.Following?.Select(u => u.ToMinimalUserInformationDto()) ?? []],
+                Followers = [.. user.Followers?.Select(u => u.ToMinimalUserInformationDto()) ?? []]
             };
         }
 
@@ -59,7 +59,7 @@ namespace RockServers.Mappers
             {
                 Id = user.Id,
                 Username = user.UserName!,
-                Avatar = user.Avatar!.Name,
+                Avatar = user.Avatar?.Name,
                 ProfileImage = user.ProfileImage!,
             };
         }

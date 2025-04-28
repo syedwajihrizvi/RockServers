@@ -9,17 +9,6 @@ namespace RockServers.Mappers
 {
     public static class CommentMapper
     {
-        public static ReplyDto ToReplyDto(this Reply reply)
-        {
-            return new ReplyDto
-            {
-                Content = reply.Content,
-                RepliedAt = reply.RepliedAt,
-                AppUserId = reply.AppUser!.Id,
-                CommentedBy = reply.AppUser.UserName!
-            };
-        }
-
         public static Comment ToCommentFromCreate(this CreateCommentDto createCommentDto, string appUserId)
         {
             return new Comment
@@ -28,6 +17,16 @@ namespace RockServers.Mappers
                 Content = createCommentDto.Content,
                 PostId = createCommentDto.PostId,
                 AppUserId = appUserId
+            };
+        }
+
+        public static ReplyDto ToReplyDto(this CommentReply commentReply)
+        {
+            return new ReplyDto
+            {
+                Content = commentReply.Content,
+                RepliedAt = commentReply.RepliedAt,
+                AppUser = commentReply.AppUser?.ToMinimalUserInformationDto()
             };
         }
 
@@ -40,10 +39,10 @@ namespace RockServers.Mappers
                 Content = comment.Content,
                 CommentedBy = comment.AppUser!.UserName!,
                 AppUser = comment.AppUser.ToMinimalUserInformationDto(),
-                Avatar = comment.AppUser.Avatar!.Name,
+                Replies = [.. comment.CommentReply.Select(c => c.ToReplyDto())],
                 CommentedAt = comment.CommentedAt,
                 Likes = comment.Likes,
-                Dislikes = comment.Dislikes
+                Dislikes = comment.Dislikes,
             };
         }
 
@@ -55,8 +54,6 @@ namespace RockServers.Mappers
                 Content = discussionComment.Content,
                 CommentedBy = discussionComment.AppUser!.UserName!,
                 AppUser = discussionComment.AppUser.ToMinimalUserInformationDto(),
-                Avatar = discussionComment.AppUser.Avatar!.Name,
-                Replies = [.. discussionComment.Replies.Select(s => s.ToReplyDto())],
                 CommentedAt = discussionComment.CommentedAt,
                 Likes = discussionComment.Likes,
                 Dislikes = discussionComment.Dislikes
@@ -70,6 +67,15 @@ namespace RockServers.Mappers
                 Content = createDiscussionCommentDto.Content,
                 DiscussionId = createDiscussionCommentDto.DiscussionId,
                 AppUserId = appUserId
+            };
+        }
+
+        public static CommentReply ToCommentReply(this ReplyDto replyDto, string appUserId)
+        {
+            return new CommentReply
+            {
+                Content = replyDto.Content,
+                AppUserId = appUserId,
             };
         }
     }

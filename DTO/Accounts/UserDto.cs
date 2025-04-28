@@ -54,8 +54,8 @@ namespace RockServers.DTO.Accounts
     {
         public string Id { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
-        public string Avatar { get; set; } = string.Empty;
-        public string ProfileImage { get; set; } = string.Empty;
+        public string? Avatar { get; set; }
+        public string? ProfileImage { get; set; }
     }
 
     public class FollowDto

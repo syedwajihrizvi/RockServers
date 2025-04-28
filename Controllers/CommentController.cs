@@ -50,6 +50,8 @@ namespace RockServers.Controllers
             }
             var commentsDto = await comments.Include(c => c.AppUser)
                                             .ThenInclude(a => a!.Avatar)
+                                            .Include(c => c.CommentReply)
+                                            .ThenInclude(r => r.AppUser)
                                             .Select(c => c.ToCommentDto())
                                             .ToListAsync();
             return Ok(commentsDto);
@@ -124,6 +126,23 @@ namespace RockServers.Controllers
                 comment.Content = commentDto.Content;
             await _context.SaveChangesAsync();
             return Ok(comment);
+        }
+
+        [HttpPatch("{commentId:int}/reply")]
+        [Authorize]
+        public async Task<IActionResult> ReplyToComment([FromRoute] int commentId, [FromBody] ReplyDto replyDto)
+        {
+            var comment = await _context.Comments.Where(c => c.Id == commentId).FirstOrDefaultAsync();
+            if (comment == null)
+                return NotFound("Invalid Comment Id Provided");
+            var appUserId = User.GetUserId();
+            if (appUserId == null)
+                return Unauthorized("Invalid user provided");
+            var reply = replyDto.ToCommentReply(appUserId);
+            reply.CommentId = commentId;
+            await _context.CommentReplies.AddAsync(reply);
+            await _context.SaveChangesAsync();
+            return Ok(replyDto);
         }
 
         [HttpDelete("{commentId:int}")]

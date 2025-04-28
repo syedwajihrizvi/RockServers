@@ -15,6 +15,7 @@ namespace RockServers.Models
         public string? AppUserId { get; set; } = string.Empty;
         public int? CommentId { get; set; }
         public Comment? Comment { get; set; }
+        public int Likes { get; set; } = 0;
 
     }
 }

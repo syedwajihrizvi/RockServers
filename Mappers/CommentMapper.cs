@@ -26,7 +26,8 @@ namespace RockServers.Mappers
             {
                 Content = commentReply.Content,
                 RepliedAt = commentReply.RepliedAt,
-                AppUser = commentReply.AppUser?.ToMinimalUserInformationDto()
+                AppUser = commentReply.AppUser?.ToMinimalUserInformationDto(),
+                Likes = commentReply.Likes,
             };
         }
 

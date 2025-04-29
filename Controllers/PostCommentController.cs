@@ -16,10 +16,10 @@ namespace RockServers.Controllers
 {
     [Route("api/comments")]
     [ApiController]
-    public class CommentController : ControllerBase
+    public class PostCommentController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
-        public CommentController(ApplicationDBContext context)
+        public PostCommentController(ApplicationDBContext context)
         {
             _context = context;
         }
@@ -27,7 +27,7 @@ namespace RockServers.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] CommentQueryObject queryObject)
         {
-            var comments = _context.Comments.AsQueryable();
+            var comments = _context.PostComments.AsQueryable();
 
             if (queryObject != null)
             {
@@ -50,8 +50,9 @@ namespace RockServers.Controllers
             }
             var commentsDto = await comments.Include(c => c.AppUser)
                                             .ThenInclude(a => a!.Avatar)
-                                            .Include(c => c.CommentReply)
+                                            .Include(c => c.Replies)
                                             .ThenInclude(r => r.AppUser)
+                                            .ThenInclude(a => a!.Avatar)
                                             .Select(c => c.ToCommentDto())
                                             .ToListAsync();
             return Ok(commentsDto);
@@ -60,7 +61,7 @@ namespace RockServers.Controllers
         [HttpGet("{commentId:int}")]
         public async Task<IActionResult> GetComment([FromRoute] int commentId)
         {
-            var comment = await _context.Comments.Where(c => c.Id == commentId).FirstOrDefaultAsync();
+            var comment = await _context.PostComments.Where(c => c.Id == commentId).FirstOrDefaultAsync();
             if (comment == null)
                 return NotFound($"Comment with ID {commentId} not found");
             return Ok(comment);
@@ -78,7 +79,7 @@ namespace RockServers.Controllers
             if (appUserId == null)
                 return Unauthorized("User is invalid. Please ensure JWT token is in the request header.");
             var comment = createCommentDto.ToCommentFromCreate(appUserId);
-            await _context.Comments.AddAsync(comment);
+            await _context.PostComments.AddAsync(comment);
             await _context.SaveChangesAsync();
             return Ok(createCommentDto);
         }
@@ -86,7 +87,7 @@ namespace RockServers.Controllers
         [HttpPatch("{commentId:int}/updateLikes")]
         public async Task<IActionResult> UpdatePostLikes([FromRoute] int commentId, [FromBody] bool increment)
         {
-            var comment = await _context.Comments.Where(c => c.Id == commentId).FirstOrDefaultAsync();
+            var comment = await _context.PostComments.Where(c => c.Id == commentId).FirstOrDefaultAsync();
             if (comment == null)
                 return base.NotFound($"Post with {comment} does not exist");
             comment.Likes += increment ? 1 : -1;
@@ -95,14 +96,14 @@ namespace RockServers.Controllers
             if (appUserId == null)
                 return Unauthorized("User not valid");
             var appUser = await _context.Users.Where(u => u.Id == appUserId)
-                                              .Include(u => u.LikedComments)
+                                              .Include(u => u.LikesPostComments)
                                               .FirstOrDefaultAsync();
             if (appUser == null)
                 return Unauthorized("User not valid");
             if (increment)
-                appUser.LikedComments.Add(comment);
+                appUser.LikesPostComments.Add(comment);
             else
-                appUser.LikedComments.Remove(comment);
+                appUser.LikesPostComments.Remove(comment);
             await _context.SaveChangesAsync();
             return Ok(comment);
         }
@@ -111,7 +112,7 @@ namespace RockServers.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateComment([FromRoute] int commentId, [FromBody] CreateCommentDto commentDto)
         {
-            var comment = await _context.Comments.Where(c => c.Id == commentId).FirstOrDefaultAsync();
+            var comment = await _context.PostComments.Where(c => c.Id == commentId).FirstOrDefaultAsync();
             if (comment == null)
                 return NotFound($"Comment with ID ${commentId} not found");
             var appUserId = User.GetUserId();
@@ -120,8 +121,6 @@ namespace RockServers.Controllers
             // Ensure the user sending the request matches the user that made the comment
             if (comment.AppUserId != appUserId)
                 return Unauthorized("Invalid user Id");
-            if (!string.IsNullOrWhiteSpace(commentDto.Title))
-                comment.Title = commentDto.Title;
             if (!string.IsNullOrWhiteSpace(commentDto.Content))
                 comment.Content = commentDto.Content;
             await _context.SaveChangesAsync();
@@ -130,17 +129,17 @@ namespace RockServers.Controllers
 
         [HttpPatch("{commentId:int}/reply")]
         [Authorize]
-        public async Task<IActionResult> ReplyToComment([FromRoute] int commentId, [FromBody] ReplyDto replyDto)
+        public async Task<IActionResult> ReplyToComment([FromRoute] int commentId, [FromBody] CreateReplyDto replyDto)
         {
-            var comment = await _context.Comments.Where(c => c.Id == commentId).FirstOrDefaultAsync();
+            var comment = await _context.PostComments.Where(c => c.Id == commentId).FirstOrDefaultAsync();
             if (comment == null)
                 return NotFound("Invalid Comment Id Provided");
             var appUserId = User.GetUserId();
             if (appUserId == null)
                 return Unauthorized("Invalid user provided");
-            var reply = replyDto.ToCommentReply(appUserId);
-            reply.CommentId = commentId;
-            await _context.CommentReplies.AddAsync(reply);
+            var reply = replyDto.ToPostCommentReply(appUserId);
+            reply.PostCommentId = commentId;
+            await _context.PostReplies.AddAsync(reply);
             await _context.SaveChangesAsync();
             return Ok(replyDto);
         }
@@ -148,7 +147,7 @@ namespace RockServers.Controllers
         [HttpDelete("{commentId:int}")]
         public async Task<IActionResult> Delete([FromRoute] int commentId)
         {
-            var comment = await _context.Comments.FindAsync(commentId);
+            var comment = await _context.PostComments.FindAsync(commentId);
             if (comment == null)
                 return NotFound($"Comment with {commentId} not found");
             _context.Remove(comment);

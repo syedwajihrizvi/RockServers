@@ -39,7 +39,7 @@ namespace RockServers.Mappers
                 OtherImages = discussion.OtherImages,
                 AppUserId = discussion.AppUserId,
                 AppUser = discussion.AppUser!.ToPostedByUserDto(),
-                Comments = [.. discussion.DiscussionComments.Select(d => d.ToDiscussionCommentDto())],
+                Comments = [.. discussion.DiscussionComments.Select(d => d.ToCommentDto())],
                 Likes = discussion.Likes,
                 Views = discussion.Views
             };

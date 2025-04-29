@@ -20,10 +20,10 @@ namespace RockServers.Data
         // Adds to the Models
         public DbSet<Game> Games { get; set; }
         public DbSet<Post> Posts { get; set; }
-        public DbSet<Comment> Comments { get; set; }
-        public DbSet<CommentReply> CommentReplies { get; set; }
+        public DbSet<PostComment> PostComments { get; set; }
+        public DbSet<PostReply> PostReplies { get; set; }
         public DbSet<DiscussionComment> DiscussionComments { get; set; }
-        public DbSet<Reply> Replies { get; set; }
+        public DbSet<DiscussionReply> DiscussionReplies { get; set; }
         public DbSet<Session> Sessions { get; set; }
         public DbSet<SessionUser> SessionUsers { get; set; }
         public DbSet<Avatar> Avatars { get; set; }
@@ -40,7 +40,6 @@ namespace RockServers.Data
                 new IdentityRole{Name = "Admin", NormalizedName = "ADMIN"},
                 new IdentityRole{Name = "User", NormalizedName = "USER"}
             ];
-
             modelBuilder.Entity<IdentityRole>().HasData(roles);
             modelBuilder.Entity<SessionUser>()
                         .HasKey(s => new { s.SessionId, s.AppUserId });
@@ -72,11 +71,11 @@ namespace RockServers.Data
                         .WithMany()
                         .HasForeignKey(d => d.AppUserId)
                         .OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Comment>()
+            modelBuilder.Entity<PostComment>()
                         .HasMany(c => c.LikedByUsers)
-                        .WithMany(a => a.LikedComments)
-                        .UsingEntity(j => j.ToTable("CommentLiked"));
-            modelBuilder.Entity<Comment>()
+                        .WithMany(a => a.LikesPostComments)
+                        .UsingEntity(j => j.ToTable("PostCommentLiked"));
+            modelBuilder.Entity<PostComment>()
                         .HasOne(c => c.AppUser)
                         .WithMany()
                         .HasForeignKey(c => c.AppUserId)

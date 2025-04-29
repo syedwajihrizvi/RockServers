@@ -29,7 +29,7 @@ namespace RockServers.Models
 
         public AppUser? AppUser { get; set; }
 
-        public List<Comment> Comments { get; set; } = [];
+        public List<PostComment> Comments { get; set; } = [];
 
         public string ImagePath { get; set; } = string.Empty;
 

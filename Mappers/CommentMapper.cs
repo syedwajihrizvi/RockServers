@@ -9,55 +9,65 @@ namespace RockServers.Mappers
 {
     public static class CommentMapper
     {
-        public static Comment ToCommentFromCreate(this CreateCommentDto createCommentDto, string appUserId)
+        public static PostComment ToCommentFromCreate(this CreateCommentDto createCommentDto, string appUserId)
         {
-            return new Comment
+            return new PostComment
             {
-                Title = createCommentDto.Title,
                 Content = createCommentDto.Content,
                 PostId = createCommentDto.PostId,
                 AppUserId = appUserId
             };
         }
 
-        public static ReplyDto ToReplyDto(this CommentReply commentReply)
+        public static ReplyDto ToReplyDto(this PostReply reply)
         {
             return new ReplyDto
             {
-                Content = commentReply.Content,
-                RepliedAt = commentReply.RepliedAt,
-                AppUser = commentReply.AppUser?.ToMinimalUserInformationDto(),
-                Likes = commentReply.Likes,
+                Content = reply.Content,
+                RepliedAt = reply.RepliedAt,
+                AppUser = reply.AppUser?.ToMinimalUserInformationDto(),
+                Likes = reply.Likes,
             };
         }
 
-        public static CommentDto ToCommentDto(this Comment comment)
+        public static ReplyDto ToReplyDto(this DiscussionReply reply)
+        {
+            return new ReplyDto
+            {
+                Content = reply.Content,
+                RepliedAt = reply.RepliedAt,
+                AppUser = reply.AppUser?.ToMinimalUserInformationDto(),
+                Likes = reply.Likes,
+            };
+        }
+
+        public static CommentDto ToCommentDto(this PostComment comment)
         {
             return new CommentDto
             {
                 Id = comment.Id,
-                Title = comment.Title,
                 Content = comment.Content,
                 CommentedBy = comment.AppUser!.UserName!,
                 AppUser = comment.AppUser.ToMinimalUserInformationDto(),
-                Replies = [.. comment.CommentReply.Select(c => c.ToReplyDto())],
+                Replies = [.. comment.Replies.Select(c => c.ToReplyDto())],
                 CommentedAt = comment.CommentedAt,
                 Likes = comment.Likes,
                 Dislikes = comment.Dislikes,
             };
         }
 
-        public static DiscussionCommentDto ToDiscussionCommentDto(this DiscussionComment discussionComment)
+        public static CommentDto ToCommentDto(this DiscussionComment comment)
         {
-            return new DiscussionCommentDto
+            return new CommentDto
             {
-                Id = discussionComment.Id,
-                Content = discussionComment.Content,
-                CommentedBy = discussionComment.AppUser!.UserName!,
-                AppUser = discussionComment.AppUser.ToMinimalUserInformationDto(),
-                CommentedAt = discussionComment.CommentedAt,
-                Likes = discussionComment.Likes,
-                Dislikes = discussionComment.Dislikes
+                Id = comment.Id,
+                Content = comment.Content,
+                CommentedBy = comment.AppUser!.UserName!,
+                AppUser = comment.AppUser.ToMinimalUserInformationDto(),
+                Replies = [.. comment.Replies.Select(c => c.ToReplyDto())],
+                CommentedAt = comment.CommentedAt,
+                Likes = comment.Likes,
+                Dislikes = comment.Dislikes,
             };
         }
 
@@ -71,9 +81,18 @@ namespace RockServers.Mappers
             };
         }
 
-        public static CommentReply ToCommentReply(this ReplyDto replyDto, string appUserId)
+        public static PostReply ToPostCommentReply(this CreateReplyDto replyDto, string appUserId)
         {
-            return new CommentReply
+            return new PostReply
+            {
+                Content = replyDto.Content,
+                AppUserId = appUserId,
+            };
+        }
+
+        public static DiscussionReply ToDiscussionCommentReply(this CreateReplyDto replyDto, string appUserId)
+        {
+            return new DiscussionReply
             {
                 Content = replyDto.Content,
                 AppUserId = appUserId,

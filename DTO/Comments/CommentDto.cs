@@ -30,5 +30,6 @@ namespace RockServers.DTO.Comments
         public DateTime CommentedAt { get; set; } = DateTime.Now;
         public int Likes { get; set; }
         public int Dislikes { get; set; }
+        public List<ReplyDto> Replies { get; set; } = [];
     }
 }

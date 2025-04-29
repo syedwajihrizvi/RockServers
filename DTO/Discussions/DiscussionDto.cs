@@ -32,7 +32,7 @@ namespace RockServers.DTO.Discussions
         public List<string>? OtherImages { get; set; }
         public string? AppUserId { get; set; }
         public PostedByUserDto? AppUser { get; set; }
-        public List<DiscussionCommentDto> Comments { get; set; } = [];
+        public List<CommentDto> Comments { get; set; } = [];
         public int Likes { get; set; } = 0;
         public int Views { get; set; } = 0;
     }

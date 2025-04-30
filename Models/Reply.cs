@@ -15,6 +15,7 @@ namespace RockServers.Models
         public int? Likes { get; set; } = 0;
         public int? DiscussionCommentId { get; set; }
         public DiscussionComment? DiscussionComment { get; set; }
+        public List<AppUser> LikedByUsers { get; set; } = [];
     }
 
     public class PostReply
@@ -27,5 +28,6 @@ namespace RockServers.Models
         public int? Likes { get; set; } = 0;
         public int? PostCommentId { get; set; }
         public PostComment? PostComment { get; set; }
+        public List<AppUser> LikedByUsers { get; set; } = [];
     }
 }

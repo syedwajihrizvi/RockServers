@@ -19,6 +19,8 @@ namespace RockServers.Models
         public List<Discussion> LikedDicussions { get; set; } = [];
         public List<PostComment> LikesPostComments { get; set; } = [];
         public List<DiscussionComment> LikedDiscussionComments { get; set; } = [];
+        public List<PostReply> LikedPostReplys { get; set; } = [];
+        public List<DiscussionReply> LikedDiscussionReplys { get; set; } = [];
         public List<AppUser> Following { get; set; } = [];
         public List<AppUser> Followers { get; set; } = [];
     }

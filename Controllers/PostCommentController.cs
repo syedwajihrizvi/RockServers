@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using RockServers.DTO.Comments;
 using RockServers.Extensions;
 using RockServers.Helpers;
 using RockServers.Mappers;
+using RockServers.Models;
 
 namespace RockServers.Controllers
 {
@@ -19,9 +21,11 @@ namespace RockServers.Controllers
     public class PostCommentController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
-        public PostCommentController(ApplicationDBContext context)
+        private readonly UserManager<AppUser> _userManager;
+        public PostCommentController(ApplicationDBContext context, UserManager<AppUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         [HttpGet]
@@ -153,6 +157,54 @@ namespace RockServers.Controllers
             _context.Remove(comment);
             await _context.SaveChangesAsync();
             return Ok(comment);
+        }
+
+        [HttpPatch("{commentId:int}/{replyId:int}/updateLikes")]
+        [Authorize]
+        public async Task<IActionResult> UpdateReplyLike([FromRoute] int commentId, [FromRoute] int replyId)
+        {
+            var comment = await _context.PostComments.Where(c => c.Id == commentId).FirstOrDefaultAsync();
+            if (comment == null)
+                return NotFound($"Comment with Id {commentId} was not found.");
+            var reply = await _context.PostReplies.Where(r => r.Id == replyId)
+                                                  .Include(r => r.LikedByUsers).FirstOrDefaultAsync();
+            if (reply == null)
+                return NotFound($"Reply with {replyId} not found");
+            var appUserId = User.GetUserId();
+            if (appUserId == null)
+                return Unauthorized("Please provide proper credentials");
+            var appUser = await _userManager.FindByIdAsync(appUserId);
+            if (appUser == null)
+                return Unauthorized("Please provide valid credentials. User not found");
+            // If the user has already liked this reoly, decrement its likes
+            if (reply.LikedByUsers.Exists(u => u.Id == appUserId))
+            {
+                appUser.LikedPostReplys.Remove(reply);
+                reply.Likes -= 1;
+            }
+            else
+            {
+                appUser.LikedPostReplys.Add(reply);
+                reply.Likes += 1;
+            }
+            await _context.SaveChangesAsync();
+            return Ok(reply.ToReplyDto());
+        }
+
+        [HttpDelete("{commentId:int}/{replyId:int}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteReply([FromRoute] int commentId, [FromRoute] int replyId)
+        {
+            var comment = await _context.PostComments.Where(c => c.Id == commentId).FirstOrDefaultAsync();
+            if (comment == null)
+                return NotFound($"Comment with Id {commentId} was not found.");
+            var reply = await _context.PostReplies.Where(r => r.Id == replyId)
+                                                  .Include(r => r.LikedByUsers).FirstOrDefaultAsync();
+            if (reply == null)
+                return NotFound($"Reply with {replyId} not found");
+            _context.Remove(reply);
+            await _context.SaveChangesAsync();
+            return Ok(reply);
         }
     }
 }

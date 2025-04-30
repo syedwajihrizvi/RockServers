@@ -49,6 +49,7 @@ namespace RockServers.Controllers
                                               .Include(u => u.LikedDicussions)
                                               .Include(u => u.LikesPostComments)
                                               .Include(u => u.LikedDiscussionComments)
+                                              .Include(u => u.LikedPostReplys)
                                               .Include(u => u.Following)
                                               .ThenInclude(a => a.Avatar)
                                               .Include(u => u.Followers)

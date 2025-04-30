@@ -8,6 +8,7 @@ namespace RockServers.DTO.Comments
 {
     public class ReplyDto
     {
+        public int? Id { get; set; }
         public string Content { get; set; } = string.Empty;
         public DateTime RepliedAt { get; set; }
         public MinimalUserInformationDto? AppUser { get; set; }

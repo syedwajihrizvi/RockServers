@@ -23,6 +23,7 @@ namespace RockServers.Mappers
         {
             return new ReplyDto
             {
+                Id = reply.Id,
                 Content = reply.Content,
                 RepliedAt = reply.RepliedAt,
                 AppUser = reply.AppUser?.ToMinimalUserInformationDto(),
@@ -34,6 +35,7 @@ namespace RockServers.Mappers
         {
             return new ReplyDto
             {
+                Id = reply.Id,
                 Content = reply.Content,
                 RepliedAt = reply.RepliedAt,
                 AppUser = reply.AppUser?.ToMinimalUserInformationDto(),

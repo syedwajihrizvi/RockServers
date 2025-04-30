@@ -46,6 +46,7 @@ namespace RockServers.DTO.Accounts
         public List<int> LikedComments { get; set; } = [];
         public List<int> LikedDiscussionComments { get; set; } = [];
         public List<int> LikedPostReplys { get; set; } = [];
+        public List<int> LikedDiscussionReplys { get; set; } = [];
         public List<MinimalUserInformationDto> Following { get; set; } = [];
         public List<MinimalUserInformationDto> Followers { get; set; } = [];
         public int? TotalPostings { get; set; }

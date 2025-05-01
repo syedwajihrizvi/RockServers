@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using RockServers.Models;
 
 namespace RockServers.Helpers
 {
@@ -58,5 +59,10 @@ namespace RockServers.Helpers
         public int? PostId { get; set; }
         public bool Completed { get; set; }
         public bool Active { get; set; }
+    }
+
+    public class NotifactionQueryObject
+    {
+        public NotificationType? Type { get; set; }
     }
 }

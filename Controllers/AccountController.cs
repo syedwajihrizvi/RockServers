@@ -182,7 +182,16 @@ namespace RockServers.Controllers
             if (user.Followers.Contains(currentUser))
                 user.Followers.Remove(currentUser);
             else
+            {
                 user.Followers.Add(currentUser);
+                var notification = new Notification
+                {
+                    Type = NotificationType.Follow,
+                    EngagerId = currentUserId,
+                    TargetId = user.Id,
+                };
+                await _context.Notifications.AddAsync(notification);
+            }
             await _context.SaveChangesAsync();
             return Ok();
         }

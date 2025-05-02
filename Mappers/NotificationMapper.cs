@@ -11,7 +11,7 @@ namespace RockServers.Mappers
     public static class NotificationMapper
     {
         public static NotificationDto ToNotificationDto(
-            this Notification notification, string entityContent, int? postOrDisc)
+            this Notification notification, string entityContent, int? postOrDesc)
         {
             return new NotificationDto
             {
@@ -19,7 +19,7 @@ namespace RockServers.Mappers
                 Type = notification.Type,
                 Engager = notification?.Engager?.ToMinimalUserInformationDto(),
                 Target = notification?.Target?.ToMinimalUserInformationDto(),
-                EntityId = notification?.Type == NotificationType.DiscussionCommentLike || notification?.Type == NotificationType.PostCommentLike ? postOrDisc : notification?.EntityId,
+                EntityId = postOrDesc != null ? postOrDesc : notification?.EntityId,
                 EntityContent = entityContent,
                 IsRead = notification?.IsRead,
                 CreatedAt = notification!.CreatedAt,

@@ -85,6 +85,16 @@ namespace RockServers.Controllers
             var comment = createCommentDto.ToCommentFromCreate(appUserId);
             await _context.PostComments.AddAsync(comment);
             await _context.SaveChangesAsync();
+            var notification = new Notification
+            {
+                Type = NotificationType.PostComment,
+                EngagerId = appUserId,
+                TargetId = post.AppUserId!,
+                EntityId = comment.Id,
+            };
+
+            await _context.Notifications.AddAsync(notification);
+            await _context.SaveChangesAsync();
             return Ok(createCommentDto);
         }
 
@@ -105,7 +115,18 @@ namespace RockServers.Controllers
             if (appUser == null)
                 return Unauthorized("User not valid");
             if (increment)
+            {
+                // Create new Notification
+                var notification = new Notification
+                {
+                    Type = NotificationType.PostCommentLike,
+                    EngagerId = appUserId,
+                    TargetId = comment.AppUserId!,
+                    EntityId = comment.Id,
+                };
+                await _context.Notifications.AddAsync(notification);
                 appUser.LikesPostComments.Add(comment);
+            }
             else
                 appUser.LikesPostComments.Remove(comment);
             await _context.SaveChangesAsync();
@@ -144,6 +165,16 @@ namespace RockServers.Controllers
             var reply = replyDto.ToPostCommentReply(appUserId);
             reply.PostCommentId = commentId;
             await _context.PostReplies.AddAsync(reply);
+            await _context.SaveChangesAsync();
+            // Create new Notification
+            var notification = new Notification
+            {
+                Type = NotificationType.ReplyPostComment,
+                EngagerId = appUserId,
+                TargetId = comment.AppUserId!,
+                EntityId = reply.Id,
+            };
+            await _context.Notifications.AddAsync(notification);
             await _context.SaveChangesAsync();
             return Ok(replyDto);
         }
@@ -186,6 +217,16 @@ namespace RockServers.Controllers
             {
                 appUser.LikedPostReplys.Add(reply);
                 reply.Likes += 1;
+                // Create Notifaction
+                var notification = new Notification
+                {
+                    Type = NotificationType.PostCommentReplyLike,
+                    EngagerId = appUserId,
+                    TargetId = reply.AppUserId!,
+                    EntityId = reply.Id,
+                };
+
+                await _context.Notifications.AddAsync(notification);
             }
             await _context.SaveChangesAsync();
             return Ok(reply.ToReplyDto());

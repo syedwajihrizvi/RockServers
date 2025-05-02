@@ -33,11 +33,7 @@ namespace RockServers.Controllers
 
             string notificationStringFromEntity = "";
             int? postOrDescId = null;
-            if (notification.Type == NotificationType.Follow)
-            {
-
-            }
-            else if (notification.Type == NotificationType.PostCommentLike)
+            if (notification.Type == NotificationType.PostCommentLike)
             {
                 var comment = await _context.PostComments
                                             .Where(c => c.Id == notification.EntityId)
@@ -61,17 +57,95 @@ namespace RockServers.Controllers
                     postOrDescId = comment.Discussion.Id;
                 }
             }
-            else if (notification.Type == NotificationType.Post)
+            else if (notification.Type == NotificationType.PostLike)
             {
-                var comment = await _context.Posts.Where(c => c.Id == notification.EntityId).FirstOrDefaultAsync();
+                var comment = await _context.Posts
+                                            .Where(c => c.Id == notification.EntityId)
+                                            .FirstOrDefaultAsync();
                 if (comment != null)
                     notificationStringFromEntity = comment.Title;
             }
-            else if (notification.Type == NotificationType.Discussion)
+            else if (notification.Type == NotificationType.DiscussionLike)
             {
-                var comment = await _context.Discussions.Where(c => c.Id == notification.EntityId).FirstOrDefaultAsync();
+                var comment = await _context.Discussions
+                                            .Where(c => c.Id == notification.EntityId)
+                                            .FirstOrDefaultAsync();
                 if (comment != null)
                     notificationStringFromEntity = comment.Title;
+            }
+            else if (notification.Type == NotificationType.PostComment)
+            {
+                var comment = await _context.PostComments
+                                        .Where(c => c.Id == notification.EntityId)
+                                        .Include(c => c.Post)
+                                        .FirstOrDefaultAsync();
+                if (comment != null)
+                {
+                    notificationStringFromEntity = comment.Post?.Title!;
+                    postOrDescId = comment.PostId;
+                }
+            }
+            else if (notification.Type == NotificationType.DiscussionComment)
+            {
+                var comment = await _context.DiscussionComments
+                                               .Where(d => d.Id == notification.EntityId)
+                                               .Include(d => d.Discussion)
+                                               .FirstOrDefaultAsync();
+                if (comment != null)
+                {
+                    notificationStringFromEntity = comment.Discussion?.Title!;
+                    postOrDescId = comment.Discussion?.Id;
+                }
+            }
+            else if (notification.Type == NotificationType.PostCommentReplyLike)
+            {
+                var reply = await _context.PostReplies.Where(r => r.Id == notification.EntityId)
+                                                      .Include(r => r.PostComment)
+                                                      .ThenInclude(c => c!.Post)
+                                                      .FirstOrDefaultAsync();
+                if (reply != null)
+                {
+                    notificationStringFromEntity = reply.PostComment?.Post?.Title!;
+                    postOrDescId = reply.PostComment?.Post?.Id;
+                }
+            }
+            else if (notification.Type == NotificationType.DiscussionCommentReplyLike)
+            {
+                var reply = await _context.DiscussionReplies
+                                         .Where(d => d.Id == notification.EntityId)
+                                         .Include(r => r.DiscussionComment)
+                                         .ThenInclude(c => c!.Discussion)
+                                         .FirstOrDefaultAsync();
+                if (reply != null)
+                {
+                    notificationStringFromEntity = reply?.DiscussionComment?.Discussion?.Title!;
+                    postOrDescId = reply?.DiscussionComment?.Discussion?.Id;
+                }
+            }
+            else if (notification.Type == NotificationType.ReplyPostComment)
+            {
+                var reply = await _context.PostReplies.Where(r => r.Id == notification.EntityId)
+                                                      .Include(r => r.PostComment)
+                                                      .ThenInclude(c => c!.Post)
+                                                      .FirstOrDefaultAsync();
+                if (reply != null)
+                {
+                    notificationStringFromEntity = reply.PostComment?.Post?.Title!;
+                    postOrDescId = reply.PostComment?.Post?.Id;
+                }
+            }
+            else if (notification.Type == NotificationType.ReplyDiscussionComment)
+            {
+                var reply = await _context.DiscussionReplies
+                                         .Where(d => d.Id == notification.EntityId)
+                                         .Include(r => r.DiscussionComment)
+                                         .ThenInclude(c => c!.Discussion)
+                                         .FirstOrDefaultAsync();
+                if (reply != null)
+                {
+                    notificationStringFromEntity = reply?.DiscussionComment?.Discussion?.Title!;
+                    postOrDescId = reply?.DiscussionComment?.Discussion?.Id;
+                }
             }
             return notification.ToNotificationDto(notificationStringFromEntity, postOrDescId);
         }

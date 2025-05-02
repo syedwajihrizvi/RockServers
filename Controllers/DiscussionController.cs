@@ -209,6 +209,15 @@ namespace RockServers.Controllers
                 appUser.LikedDicussions.Add(discussion);
             else
                 appUser.LikedDicussions.Remove(discussion);
+            var notification = new Notification
+            {
+                Type = NotificationType.DiscussionLike,
+                EngagerId = appUserId,
+                TargetId = discussion.AppUserId!,
+                EntityId = discussion.Id,
+            };
+
+            await _context.Notifications.AddAsync(notification);
             await _context.SaveChangesAsync();
             return Ok(discussion);
         }

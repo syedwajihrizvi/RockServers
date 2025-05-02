@@ -10,8 +10,14 @@ namespace RockServers.Models
         Follow,
         PostCommentLike,
         DiscussionCommentLike,
-        Post,
-        Discussion
+        PostLike,
+        DiscussionLike,
+        PostComment,
+        DiscussionComment,
+        PostCommentReplyLike,
+        DiscussionCommentReplyLike,
+        ReplyPostComment,
+        ReplyDiscussionComment
     }
 
     public class Notification

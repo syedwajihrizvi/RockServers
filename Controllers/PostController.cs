@@ -214,21 +214,20 @@ namespace RockServers.Controllers
             if (appUser == null)
                 return Unauthorized("User not valid");
             if (increment)
+            {
                 appUser.LikedPosts.Add(post);
+                var notification = new Notification
+                {
+                    Type = NotificationType.PostLike,
+                    EngagerId = appUserId,
+                    TargetId = post.AppUserId!,
+                    EntityId = post.Id,
+                };
+                await _context.Notifications.AddAsync(notification);
+            }
             else
                 appUser.LikedPosts.Remove(post);
-            await _context.SaveChangesAsync();
-            return Ok(post);
-        }
 
-        [HttpPatch("{postId:int}/updateDislikes")]
-        public async Task<IActionResult> UpdatePostDislikes([FromRoute] int postId, [FromBody] bool increment)
-        {
-            var post = await _context.Posts.Where(p => p.Id == postId).FirstOrDefaultAsync();
-            if (post == null)
-                return NotFound($"Post with {postId} does not exist");
-            post.Dislikes += increment ? 1 : -1;
-            post.Dislikes = post.Dislikes < 0 ? 0 : post.Dislikes;
             await _context.SaveChangesAsync();
             return Ok(post);
         }

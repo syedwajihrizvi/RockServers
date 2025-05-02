@@ -176,5 +176,15 @@ namespace RockServers.Controllers
             }
             return Ok(finalNotificationDto);
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteAll()
+        {
+            var appUserId = User.GetUserId();
+            if (appUserId == null)
+                return Unauthorized("Invalid User Credentials");
+            await _context.Notifications.Where(n => n.TargetId == appUserId).ExecuteDeleteAsync();
+            return Ok();
+        }
     }
 }

@@ -93,7 +93,7 @@ namespace RockServers.Controllers
                 EntityId = comment.Id,
             };
 
-            await _context.Notifications.AddAsync(notification);
+            await Notification.SaveNotification(notification, _context);
             await _context.SaveChangesAsync();
             return Ok(createCommentDto);
         }
@@ -116,7 +116,6 @@ namespace RockServers.Controllers
                 return Unauthorized("User not valid");
             if (increment)
             {
-                // Create new Notification
                 var notification = new Notification
                 {
                     Type = NotificationType.PostCommentLike,
@@ -124,7 +123,7 @@ namespace RockServers.Controllers
                     TargetId = comment.AppUserId!,
                     EntityId = comment.Id,
                 };
-                await _context.Notifications.AddAsync(notification);
+                await Notification.SaveNotification(notification, _context);
                 appUser.LikesPostComments.Add(comment);
             }
             else
@@ -166,7 +165,6 @@ namespace RockServers.Controllers
             reply.PostCommentId = commentId;
             await _context.PostReplies.AddAsync(reply);
             await _context.SaveChangesAsync();
-            // Create new Notification
             var notification = new Notification
             {
                 Type = NotificationType.ReplyPostComment,
@@ -174,7 +172,7 @@ namespace RockServers.Controllers
                 TargetId = comment.AppUserId!,
                 EntityId = reply.Id,
             };
-            await _context.Notifications.AddAsync(notification);
+            await Notification.SaveNotification(notification, _context);
             await _context.SaveChangesAsync();
             return Ok(replyDto);
         }
@@ -226,7 +224,7 @@ namespace RockServers.Controllers
                     EntityId = reply.Id,
                 };
 
-                await _context.Notifications.AddAsync(notification);
+                await Notification.SaveNotification(notification, _context);
             }
             await _context.SaveChangesAsync();
             return Ok(reply.ToReplyDto());

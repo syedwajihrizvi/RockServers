@@ -79,8 +79,8 @@ namespace RockServers.Controllers
             if (appUser == null)
                 return NotFound($"User with {appUsername} does not exist");
             // Find posts and discussions made by the users
-            var posts = await _context.Posts.Where(p => p.AppUserId == appUsername).ToListAsync();
-            var discussions = await _context.Discussions.Where(d => d.AppUserId == appUsername).ToListAsync();
+            var posts = await _context.Posts.Where(p => p.AppUserId == appUser.Id).ToListAsync();
+            var discussions = await _context.Discussions.Where(d => d.AppUserId == appUser.Id).ToListAsync();
             if (appUser == null)
                 return Unauthorized("Invalid User ID Provided");
             var appUserDto = appUser.ToUserInformationDto();
@@ -190,7 +190,7 @@ namespace RockServers.Controllers
                     EngagerId = currentUserId,
                     TargetId = user.Id,
                 };
-                await _context.Notifications.AddAsync(notification);
+                await Notification.SaveNotification(notification, _context);
             }
             await _context.SaveChangesAsync();
             return Ok();

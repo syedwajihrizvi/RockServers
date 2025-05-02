@@ -223,7 +223,7 @@ namespace RockServers.Controllers
                     TargetId = post.AppUserId!,
                     EntityId = post.Id,
                 };
-                await _context.Notifications.AddAsync(notification);
+                await Notification.SaveNotification(notification, _context);
             }
             else
                 appUser.LikedPosts.Remove(post);

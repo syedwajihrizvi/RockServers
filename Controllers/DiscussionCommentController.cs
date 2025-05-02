@@ -85,7 +85,7 @@ namespace RockServers.Controllers
                 EntityId = comment.Id,
             };
 
-            await _context.Notifications.AddAsync(notification);
+            await Notification.SaveNotification(notification, _context);
             await _context.SaveChangesAsync();
             return Ok(createDiscussionCommentDto);
 
@@ -117,7 +117,7 @@ namespace RockServers.Controllers
                     EntityId = comment.Id,
                 };
 
-                await _context.Notifications.AddAsync(notification);
+                await Notification.SaveNotification(notification, _context);
                 appUser.LikedDiscussionComments.Add(comment);
             }
             else
@@ -148,7 +148,7 @@ namespace RockServers.Controllers
                 EntityId = reply.Id,
             };
 
-            await _context.Notifications.AddAsync(notification);
+            await Notification.SaveNotification(notification, _context);
             await _context.SaveChangesAsync();
             return Ok(replyDto);
         }
@@ -199,7 +199,7 @@ namespace RockServers.Controllers
                     EntityId = reply.Id,
                 };
 
-                await _context.Notifications.AddAsync(notification);
+                await Notification.SaveNotification(notification, _context);
             }
             await _context.SaveChangesAsync();
             return Ok(reply.ToReplyDto());

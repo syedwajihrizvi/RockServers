@@ -217,7 +217,7 @@ namespace RockServers.Controllers
                 EntityId = discussion.Id,
             };
 
-            await _context.Notifications.AddAsync(notification);
+            await Notification.SaveNotification(notification, _context);
             await _context.SaveChangesAsync();
             return Ok(discussion);
         }

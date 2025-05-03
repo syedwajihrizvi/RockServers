@@ -10,7 +10,8 @@ namespace RockServers.DTO.Discussions
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public int? GameId { get; set; }
-        public string ImagePath { get; set; } = string.Empty;
+        public string ThumbnailPath { get; set; } = string.Empty;
+        public IFormFile? ThumbnailFile { get; set; }
         public IFormFile[] OtherImages { get; set; } = [];
         public IFormFile[] OtherVideos { get; set; } = [];
     }
@@ -20,7 +21,7 @@ namespace RockServers.DTO.Discussions
         public string Title { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
         public int? GameId { get; set; }
-        public IFormFile? ImageFile { get; set; }
+        public IFormFile? ThumbnailFile { get; set; }
         public IFormFile[] OtherImages { get; set; } = [];
     }
 }

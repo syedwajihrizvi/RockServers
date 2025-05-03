@@ -31,7 +31,7 @@ namespace RockServers.Models
 
         public List<PostComment> Comments { get; set; } = [];
 
-        public string ImagePath { get; set; } = string.Empty;
+        public string ThumbnailPath { get; set; } = string.Empty;
 
         public int Views { get; set; } = 0;
         public int Likes { get; set; } = 0;

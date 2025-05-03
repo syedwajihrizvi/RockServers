@@ -27,7 +27,7 @@ namespace RockServers.Mappers
                 Comments = [.. post.Comments.Select(c => c.ToCommentDto())],
                 Sessions = [.. post.Sessions.Select(s => s.ToSessionDto())],
                 ActiveSession = post.Sessions.FindAll(s => s.Active).ToList().Count > 0,
-                ImagePath = post.ImagePath,
+                ThumbnailPath = post.ThumbnailPath,
                 Views = post.Views,
                 Likes = post.Likes,
                 Dislikes = post.Dislikes

@@ -156,7 +156,7 @@ namespace RockServers.Controllers
                 AppUserId = appUserId,
                 Title = createPostDto.Title,
                 Description = createPostDto.Description,
-                ImagePath = fileName
+                ThumbnailPath = fileName
             };
 
             await _context.Posts.AddAsync(newPost);
@@ -188,7 +188,7 @@ namespace RockServers.Controllers
                 AppUserId = appUserId,
                 Title = createPostDto.Title,
                 Description = createPostDto.Description,
-                ImagePath = createPostDto.ImagePath
+                ThumbnailPath = createPostDto.ImagePath
             };
 
             await _context.Posts.AddAsync(newPost);

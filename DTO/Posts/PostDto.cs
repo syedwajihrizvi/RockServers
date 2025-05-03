@@ -33,7 +33,7 @@ namespace RockServers.DTO.Posts
         public string PlatformName { get; set; } = string.Empty;
 
         public List<CommentDto> Comments { get; set; } = [];
-        public string ImagePath { get; set; } = string.Empty;
+        public string ThumbnailPath { get; set; } = string.Empty;
         public List<SessionDto> Sessions { get; set; } = [];
         public bool ActiveSession { get; set; }
         public int Views { get; set; } = 0;

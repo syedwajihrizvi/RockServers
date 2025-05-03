@@ -15,13 +15,4 @@ namespace RockServers.DTO.Discussions
         public IFormFile[] OtherImages { get; set; } = [];
         public IFormFile[] OtherVideos { get; set; } = [];
     }
-
-    public class CreateDiscussionDtoWithCustomImage
-    {
-        public string Title { get; set; } = string.Empty;
-        public string Content { get; set; } = string.Empty;
-        public int? GameId { get; set; }
-        public IFormFile? ThumbnailFile { get; set; }
-        public IFormFile[] OtherImages { get; set; } = [];
-    }
 }

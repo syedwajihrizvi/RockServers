@@ -118,10 +118,10 @@ namespace RockServers.Controllers
                 foreach (var img in createDiscussionDto.OtherImages)
                 {
                     var generatedUniqueFileName = Guid.NewGuid().ToString();
-                    var otherImageFileOutputPath = Path.Combine("wwwroot/uploads/post_images", $"{generatedUniqueFileName}.webp");
+                    var otherImageFileOutputPath = Path.Combine("wwwroot/uploads/images", $"{generatedUniqueFileName}.webp");
                     using var otherImage = await Image.LoadAsync(img.OpenReadStream());
                     await otherImage.SaveAsync(otherImageFileOutputPath, new WebpEncoder());
-                    var imgPublicUrl = $"/uploads/post_images/{generatedUniqueFileName}.webp";
+                    var imgPublicUrl = $"/uploads/images/{generatedUniqueFileName}.webp";
                     otherImages.Add(generatedUniqueFileName);
                 }
             }
@@ -138,7 +138,7 @@ namespace RockServers.Controllers
                     {
                         await video.CopyToAsync(stream);
                     }
-                    var vidPublicUrl = $"/uploads/post_images/{generatedUniqueFileName}";
+                    var vidPublicUrl = $"/uploads/images/{generatedUniqueFileName}";
                     videos.Add(generatedUniqueFileName);
                 }
             }
@@ -163,8 +163,8 @@ namespace RockServers.Controllers
                 var fileType = thumbnailFile.ContentType;
                 if (fileType.ToLower().Contains("video"))
                 {
-                    var generatedUniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(thumbnailFile.FileName)}"; ;
-                    var outputpath = Path.Combine("wwwroot/uploads/discussion_videos", generatedUniqueFileName);
+                    var generatedUniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(thumbnailFile.FileName)}";
+                    var outputpath = Path.Combine("wwwroot/uploads/videos", generatedUniqueFileName);
                     using (var stream = new FileStream(outputpath, FileMode.Create))
                     {
                         await thumbnailFile.CopyToAsync(stream);
@@ -176,10 +176,10 @@ namespace RockServers.Controllers
                 {
                     // Extract the main image into a path first
                     var generatedUniqueFileName = Guid.NewGuid().ToString();
-                    var outputpath = Path.Combine("wwwroot/uploads/post_images", $"{generatedUniqueFileName}.webp");
+                    var outputpath = Path.Combine("wwwroot/uploads/images", $"{generatedUniqueFileName}.webp");
                     using var image = await Image.LoadAsync(thumbnailFile.OpenReadStream());
                     await image.SaveAsync(outputpath, new WebpEncoder());
-                    var publicUrl = $"/uploads/post_images/{generatedUniqueFileName}.webp";
+                    var publicUrl = $"/uploads/images/{generatedUniqueFileName}.webp";
                     newDiscussion.ThumbnailType = ThumbnailType.Image;
                     newDiscussion.ThumbnailPath = generatedUniqueFileName;
                 }
@@ -187,6 +187,10 @@ namespace RockServers.Controllers
                 {
                     return BadRequest("Invalid file type detected");
                 }
+            }
+            else
+            {
+                newDiscussion.ThumbnailPath = createDiscussionDto.ThumbnailPath;
             }
 
             await _context.Discussions.AddAsync(newDiscussion);

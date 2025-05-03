@@ -28,6 +28,7 @@ namespace RockServers.Mappers
                 Sessions = [.. post.Sessions.Select(s => s.ToSessionDto())],
                 ActiveSession = post.Sessions.FindAll(s => s.Active).ToList().Count > 0,
                 ThumbnailPath = post.ThumbnailPath,
+                ThumbnailType = post.ThumbnailType,
                 Views = post.Views,
                 Likes = post.Likes,
                 Dislikes = post.Dislikes

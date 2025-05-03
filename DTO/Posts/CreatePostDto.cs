@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using RockServers.Models;
 
 namespace RockServers.DTO.Posts
 {
@@ -9,17 +10,10 @@ namespace RockServers.DTO.Posts
     {
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public int GameId { get; set; }
+        public int? GameId { get; set; }
         public int PlatformId { get; set; }
-        public string ImagePath { get; set; } = string.Empty;
+        public string ThumbnailPath { get; set; } = string.Empty;
+        public IFormFile? ThumbnailFile { get; set; }
     }
 
-    public class CreatePostDtoWithCustomImage
-    {
-        public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public int GameId { get; set; }
-        public int PlatformId { get; set; }
-        public IFormFile? ImageFile { get; set; }
-    }
 }

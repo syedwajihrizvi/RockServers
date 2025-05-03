@@ -34,6 +34,7 @@ namespace RockServers.DTO.Posts
 
         public List<CommentDto> Comments { get; set; } = [];
         public string ThumbnailPath { get; set; } = string.Empty;
+        public ThumbnailType? ThumbnailType { get; set; }
         public List<SessionDto> Sessions { get; set; } = [];
         public bool ActiveSession { get; set; }
         public int Views { get; set; } = 0;

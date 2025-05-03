@@ -120,58 +120,13 @@ namespace RockServers.Controllers
             return Ok(post.ToPostDto());
         }
 
-        [HttpPost("customImage")]
-        [Authorize]
-        public async Task<IActionResult> CreateWithCustomImage([FromForm] CreatePostDtoWithCustomImage createPostDto)
-        {
-            // Ensure that gameId is valid
-            var gameId = createPostDto.GameId;
-            var game = await _context.Games.Where(g => g.Id == gameId).FirstOrDefaultAsync();
-            if (game == null)
-                return NotFound($"Game with {gameId} does not exist.");
-            var platformId = createPostDto.PlatformId;
-            var platform = await _context.Platforms.Where(p => p.Id == platformId).FirstOrDefaultAsync();
-            if (platform == null)
-                return NotFound($"Platform with id {platformId} not found");
-            // Get the user Id from the JWT Token
-            var appUserId = User.GetUserId();
-            if (appUserId == null)
-                return Unauthorized("Invalid User ID Provided");
-            var imageFile = createPostDto.ImageFile;
-            // Create custom image
-            if (imageFile == null || imageFile.Length == 0)
-                return BadRequest("No file found in request");
-
-            // Currently, store the image in localhost wwwroot
-            // TODO: Move image storage to cloud instead of localhost
-            var fileName = Path.GetFileNameWithoutExtension(imageFile.FileName);
-            var outputpath = Path.Combine("wwwroot/uploads/post_images", $"{fileName}.webp");
-            using var image = await Image.LoadAsync(imageFile.OpenReadStream());
-            await image.SaveAsync(outputpath, new WebpEncoder());
-            var publicUrl = $"/uploads/post_images/{fileName}.webp";
-            var newPost = new Post
-            {
-                GameId = gameId,
-                PlatformId = platformId,
-                AppUserId = appUserId,
-                Title = createPostDto.Title,
-                Description = createPostDto.Description,
-                ThumbnailPath = fileName
-            };
-
-            await _context.Posts.AddAsync(newPost);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(Get), new { id = newPost.Id }, newPost);
-        }
-
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreatePostDto createPostDto)
+        public async Task<IActionResult> Create([FromForm] CreatePostDto createPostDto)
         {
-            // Ensure that gameId is valid
             var gameId = createPostDto.GameId;
             var game = await _context.Games.Where(g => g.Id == gameId).FirstOrDefaultAsync();
             if (game == null)
-                return NotFound($"Game with {gameId} does not exist.");
+                return NotFound($"Game with ID {gameId} does not exist.");
             var platformId = createPostDto.PlatformId;
             var platform = await _context.Platforms.Where(p => p.Id == platformId).FirstOrDefaultAsync();
             if (platform == null)
@@ -188,8 +143,47 @@ namespace RockServers.Controllers
                 AppUserId = appUserId,
                 Title = createPostDto.Title,
                 Description = createPostDto.Description,
-                ThumbnailPath = createPostDto.ImagePath
             };
+
+            if (createPostDto.ThumbnailFile != null)
+            {
+                var thumbnailFile = createPostDto.ThumbnailFile;
+                if (thumbnailFile == null || thumbnailFile.Length == 0)
+                    return BadRequest("No file found in request");
+                // Get the file type
+                var fileType = thumbnailFile.ContentType;
+                if (fileType.ToLower().Contains("video"))
+                {
+                    var generatedUniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(thumbnailFile.FileName)}";
+                    var outputpath = Path.Combine("wwwroot/uploads/videos", generatedUniqueFileName);
+                    using (var stream = new FileStream(outputpath, FileMode.Create))
+                    {
+                        await thumbnailFile.CopyToAsync(stream);
+                    }
+                    newPost.ThumbnailType = ThumbnailType.Video;
+                    newPost.ThumbnailPath = generatedUniqueFileName;
+
+                }
+                else if (fileType.ToLower().Contains("image"))
+                {
+                    // Extract the main image into a path first
+                    var generatedUniqueFileName = Guid.NewGuid().ToString();
+                    var outputpath = Path.Combine("wwwroot/uploads/images", $"{generatedUniqueFileName}.webp");
+                    using var image = await Image.LoadAsync(thumbnailFile.OpenReadStream());
+                    await image.SaveAsync(outputpath, new WebpEncoder());
+                    var publicUrl = $"/uploads/images/{generatedUniqueFileName}.webp";
+                    newPost.ThumbnailPath = generatedUniqueFileName;
+                }
+                else
+                {
+                    return BadRequest("Invalid file type detected");
+                }
+            }
+            else
+            {
+                newPost.ThumbnailPath = createPostDto.ThumbnailPath;
+
+            }
 
             await _context.Posts.AddAsync(newPost);
             await _context.SaveChangesAsync();

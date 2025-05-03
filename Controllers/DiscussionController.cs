@@ -134,13 +134,14 @@ namespace RockServers.Controllers
                     otherImages.Add(otherImageFileName);
                 }
             }
+
             var newDiscussion = new Discussion
             {
                 Title = createDiscussionDto.Title,
                 Content = createDiscussionDto.Content,
                 AppUserId = appUserId,
                 GameId = createDiscussionDto.GameId,
-                ImagePath = fileName,
+                ThumbnailPath = fileName,
                 OtherImages = otherImages
             };
 
@@ -174,14 +175,31 @@ namespace RockServers.Controllers
                     otherImages.Add(otherImageFileName);
                 }
             }
+            // Extract the videos
+            List<string> videos = [];
+            if (createDiscussionDto.OtherVideos.Length > 0)
+            {
+                foreach (var video in createDiscussionDto.OtherVideos)
+                {
+                    var otherVideoFileOutputPath = Path.Combine("wwwroot/uploads/discussion_videos", video.FileName);
+                    // Save the video stream directly to the file
+                    using (var stream = new FileStream(otherVideoFileOutputPath, FileMode.Create))
+                    {
+                        await video.CopyToAsync(stream);
+                    }
+                    var vidPublicUrl = $"/uploads/post_images/{video.FileName}";
+                    videos.Add(video.FileName);
+                }
+            }
             var newDiscussion = new Discussion
             {
                 Title = createDiscussionDto.Title,
                 Content = createDiscussionDto.Content,
                 AppUserId = appUserId,
                 GameId = createDiscussionDto.GameId,
-                ImagePath = createDiscussionDto.ImagePath,
-                OtherImages = otherImages
+                ThumbnailPath = createDiscussionDto.ImagePath,
+                OtherImages = otherImages,
+                VideoPaths = videos
 
             };
 

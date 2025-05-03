@@ -12,6 +12,7 @@ namespace RockServers.DTO.Discussions
         public int? GameId { get; set; }
         public string ImagePath { get; set; } = string.Empty;
         public IFormFile[] OtherImages { get; set; } = [];
+        public IFormFile[] OtherVideos { get; set; } = [];
     }
 
     public class CreateDiscussionDtoWithCustomImage

@@ -50,7 +50,8 @@ SaveNotification(Notification notification, ApplicationDBContext context)
                                                   .FirstOrDefaultAsync();
             if (notificationExists != null)
                 context.Remove(notificationExists);
-            await context.Notifications.AddAsync(notification);
+            if (notification.EngagerId != notification.TargetId)
+                await context.Notifications.AddAsync(notification);
         }
     }
 }

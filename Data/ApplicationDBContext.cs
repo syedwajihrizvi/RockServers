@@ -81,6 +81,11 @@ namespace RockServers.Data
                         .WithMany()
                         .HasForeignKey(c => c.AppUserId)
                         .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<PostComment>()
+                        .HasOne(c => c.Post)
+                        .WithMany(p => p.Comments)
+                        .HasForeignKey(c => c.PostId)
+                        .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<DiscussionComment>()
                         .HasMany(c => c.LikedByUsers)
                         .WithMany(a => a.LikedDiscussionComments)
@@ -89,6 +94,11 @@ namespace RockServers.Data
                         .HasOne(c => c.AppUser)
                         .WithMany()
                         .HasForeignKey(c => c.AppUserId)
+                        .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<DiscussionComment>()
+                        .HasOne(c => c.Discussion)
+                        .WithMany(d => d.DiscussionComments)
+                        .HasForeignKey(c => c.DiscussionId)
                         .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<PostReply>()
                         .HasMany(r => r.LikedByUsers)
@@ -99,6 +109,11 @@ namespace RockServers.Data
                         .WithMany()
                         .HasForeignKey(r => r.AppUserId)
                         .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<PostReply>()
+                        .HasOne(r => r.PostComment)
+                        .WithMany(p => p.Replies)
+                        .HasForeignKey(r => r.PostCommentId)
+                        .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<DiscussionReply>()
                         .HasMany(r => r.LikedByUsers)
                         .WithMany(a => a.LikedDiscussionReplys)
@@ -108,7 +123,11 @@ namespace RockServers.Data
                         .WithMany()
                         .HasForeignKey(r => r.AppUserId)
                         .OnDelete(DeleteBehavior.Cascade);
-
+            modelBuilder.Entity<DiscussionReply>()
+                        .HasOne(r => r.DiscussionComment)
+                        .WithMany(d => d.Replies)
+                        .HasForeignKey(r => r.DiscussionCommentId)
+                        .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<AppUser>()
                         .HasMany(u => u.Following)
                         .WithMany(u => u.Followers)

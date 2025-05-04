@@ -227,11 +227,17 @@ namespace RockServers.Controllers
         }
 
         [HttpDelete("{postId:int}")]
+        [Authorize]
         public async Task<IActionResult> Delete([FromRoute] int postId)
         {
+            var appUserId = User.GetUserId();
+            if (appUserId == null)
+                return Unauthorized("Invalid User Credentials");
             var post = await _context.Posts.FindAsync(postId);
             if (post == null)
                 return NotFound($"Post with {postId} not found");
+            if (post.AppUserId != appUserId)
+                return Unauthorized("Invalid User Credentials Provided");
             _context.Remove(post);
             await _context.SaveChangesAsync();
             return NoContent();

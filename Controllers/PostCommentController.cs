@@ -65,10 +65,17 @@ namespace RockServers.Controllers
         [HttpGet("{commentId:int}")]
         public async Task<IActionResult> GetComment([FromRoute] int commentId)
         {
-            var comment = await _context.PostComments.Where(c => c.Id == commentId).FirstOrDefaultAsync();
+            var comment = await _context.PostComments
+                                        .Where(c => c.Id == commentId)
+                                        .Include(c => c.AppUser)
+                                        .ThenInclude(a => a!.Avatar)
+                                        .Include(c => c.Replies)
+                                        .ThenInclude(r => r.AppUser)
+                                        .ThenInclude(a => a!.Avatar)
+                                        .FirstOrDefaultAsync();
             if (comment == null)
                 return NotFound($"Comment with ID {commentId} not found");
-            return Ok(comment);
+            return Ok(comment.ToCommentDto());
         }
 
         [HttpPost]

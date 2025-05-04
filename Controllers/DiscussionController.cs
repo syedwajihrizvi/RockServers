@@ -229,5 +229,22 @@ namespace RockServers.Controllers
             await _context.SaveChangesAsync();
             return Ok(discussion);
         }
+
+        [HttpDelete("{discussionId:int}")]
+        [Authorize]
+        public async Task<IActionResult> Delete([FromRoute] int discussionId)
+        {
+            var appUserId = User.GetUserId();
+            if (appUserId == null)
+                return Unauthorized("Invalid User Credentials");
+            var discussion = await _context.Discussions.FindAsync(discussionId);
+            if (discussion == null)
+                return NotFound($"Discussion with {discussionId} not found");
+            if (discussion.AppUserId != appUserId)
+                return Unauthorized("Invalid User Credentials Provided");
+            _context.Remove(discussion);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }

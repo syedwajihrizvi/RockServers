@@ -14,6 +14,7 @@ namespace RockServers.Models
 
         public string Description { get; set; } = string.Empty;
         public DateTime PostedAt { get; set; } = DateTime.Now;
+        public DateTime StartTime { get; set; } = DateTime.Now;
         // Convention to have ID and Navigation reference (for us)
         public int? GameId { get; set; }
 

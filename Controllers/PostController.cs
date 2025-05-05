@@ -191,10 +191,83 @@ namespace RockServers.Controllers
         }
 
 
+        [HttpPatch("{postId:int}")]
+        [Authorize]
+        public async Task<IActionResult> UpdatePost([FromForm] UpdatePostDto updatePostDto, [FromRoute] int postId)
+        {
+            var post = await _context.Posts.Where(p => p.Id == postId).FirstOrDefaultAsync();
+            if (post == null)
+                return NotFound("Post not found");
+            var appUserId = User.GetUserId();
+            if (appUserId == null)
+                return Unauthorized("Invalid credentials");
+            if (appUserId != post.AppUserId)
+                return Unauthorized("Invalid credentials");
+
+            // See what field need to be updated
+            if (updatePostDto.Title != null)
+                post.Title = updatePostDto.Title;
+            if (updatePostDto.Description != null)
+                post.Description = updatePostDto.Description;
+            if (updatePostDto.GameId != null)
+                post.GameId = updatePostDto.GameId;
+            if (updatePostDto.PlatformId != null)
+                post.PlatformId = updatePostDto.PlatformId;
+            if (updatePostDto.StartTime != null)
+                post.StartTime = (DateTime)updatePostDto.StartTime;
+
+            if (updatePostDto.ThumbnailFile != null)
+            {
+                var thumbnailFile = updatePostDto.ThumbnailFile;
+                if (thumbnailFile == null || thumbnailFile.Length == 0)
+                    return BadRequest("No file found in request");
+                // Get the file type
+                var fileType = thumbnailFile.ContentType;
+                if (fileType.ToLower().Contains("video"))
+                {
+                    var generatedUniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(thumbnailFile.FileName)}";
+                    var outputpath = Path.Combine("wwwroot/uploads/videos", generatedUniqueFileName);
+                    using (var stream = new FileStream(outputpath, FileMode.Create))
+                    {
+                        await thumbnailFile.CopyToAsync(stream);
+                    }
+                    post.ThumbnailType = ThumbnailType.Video;
+                    post.ThumbnailPath = generatedUniqueFileName;
+
+                }
+                else if (fileType.ToLower().Contains("image"))
+                {
+                    // Extract the main image into a path first
+                    var generatedUniqueFileName = Guid.NewGuid().ToString();
+                    var outputpath = Path.Combine("wwwroot/uploads/images", $"{generatedUniqueFileName}.webp");
+                    using var image = await Image.LoadAsync(thumbnailFile.OpenReadStream());
+                    await image.SaveAsync(outputpath, new WebpEncoder());
+                    var publicUrl = $"/uploads/images/{generatedUniqueFileName}.webp";
+                    post.ThumbnailPath = generatedUniqueFileName;
+                    post.ThumbnailType = ThumbnailType.Image;
+                }
+                else
+                {
+                    return BadRequest("Invalid file type detected");
+                }
+            }
+            if (updatePostDto.ThumbnailPath != null)
+            {
+                post.ThumbnailPath = updatePostDto.ThumbnailPath;
+                post.ThumbnailType = ThumbnailType.Image;
+            }
+
+            // Save the changes
+            await _context.SaveChangesAsync();
+            return Ok(post);
+        }
+
         [HttpPatch("{postId:int}/updateLikes")]
         public async Task<IActionResult> UpdatePostLikes([FromRoute] int postId, [FromBody] bool increment)
         {
-            var post = await _context.Posts.Where(p => p.Id == postId).FirstOrDefaultAsync();
+            var post = await _context.Posts
+                                    .Where(p => p.Id == postId)
+                                    .FirstOrDefaultAsync();
             if (post == null)
                 return NotFound($"Post with {postId} does not exist");
             post.Likes += increment ? 1 : -1;

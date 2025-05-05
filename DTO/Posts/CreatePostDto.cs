@@ -17,4 +17,15 @@ namespace RockServers.DTO.Posts
         public DateTime? StartTime { get; set; }
     }
 
+    public class UpdatePostDto
+    {
+        public string? Title { get; set; }
+        public string? Description { get; set; }
+        public int? GameId { get; set; }
+        public int? PlatformId { get; set; }
+        public string? ThumbnailPath { get; set; }
+        public IFormFile? ThumbnailFile { get; set; }
+        public DateTime? StartTime { get; set; }
+    }
+
 }

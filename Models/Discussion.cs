@@ -24,9 +24,9 @@ namespace RockServers.Models
         public string ThumbnailPath { get; set; } = string.Empty;
         public ThumbnailType ThumbnailType { get; set; } = ThumbnailType.Image;
         [Column(TypeName = "json")]
-        public List<string>? OtherImages { get; set; }
+        public List<string> OtherImages { get; set; } = [];
         [Column(TypeName = "json")]
-        public List<string>? VideoPaths { get; set; }
+        public List<string> VideoPaths { get; set; } = [];
         public string? AppUserId { get; set; }
         public List<DiscussionComment> DiscussionComments { get; set; } = [];
         public int Likes { get; set; } = 0;

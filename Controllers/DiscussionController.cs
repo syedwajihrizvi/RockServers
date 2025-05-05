@@ -230,6 +230,103 @@ namespace RockServers.Controllers
             return Ok(discussion);
         }
 
+        [HttpPatch("{discussionId:int}")]
+        public async Task<IActionResult> UpdateDiscussion([FromForm] UpdateDiscussionDto updateDiscussionDto, [FromRoute] int discussionId)
+        {
+            var discussion = await _context.Discussions.Where(d => d.Id == discussionId).FirstOrDefaultAsync();
+            if (discussion == null)
+                return NotFound("Discussion not found");
+            var appUserId = User.GetUserId();
+            if (appUserId == null)
+                return Unauthorized("Invalid User Credentials");
+            if (discussion.AppUserId != appUserId)
+                return Unauthorized("Invalid User Credentials");
+
+            if (updateDiscussionDto.Title != null)
+                discussion.Title = updateDiscussionDto.Title;
+            if (updateDiscussionDto.Content != null)
+                discussion.Content = updateDiscussionDto.Content;
+            if (updateDiscussionDto.GameId != null)
+                discussion.GameId = updateDiscussionDto.GameId;
+
+            if (updateDiscussionDto.ThumbnailFile != null)
+            {
+                var thumbnailFile = updateDiscussionDto.ThumbnailFile;
+                if (thumbnailFile == null || thumbnailFile.Length == 0)
+                    return BadRequest("No file found in request");
+                // Get the type of file
+                var fileType = thumbnailFile.ContentType;
+                if (fileType.ToLower().Contains("video"))
+                {
+                    var generatedUniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(thumbnailFile.FileName)}";
+                    var outputpath = Path.Combine("wwwroot/uploads/videos", generatedUniqueFileName);
+                    using (var stream = new FileStream(outputpath, FileMode.Create))
+                    {
+                        await thumbnailFile.CopyToAsync(stream);
+                    }
+                    discussion.ThumbnailType = ThumbnailType.Video;
+                    discussion.ThumbnailPath = generatedUniqueFileName;
+                }
+                else if (fileType.ToLower().Contains("image"))
+                {
+                    // Extract the main image into a path first
+                    var generatedUniqueFileName = Guid.NewGuid().ToString();
+                    var outputpath = Path.Combine("wwwroot/uploads/images", $"{generatedUniqueFileName}.webp");
+                    using var image = await Image.LoadAsync(thumbnailFile.OpenReadStream());
+                    await image.SaveAsync(outputpath, new WebpEncoder());
+                    var publicUrl = $"/uploads/images/{generatedUniqueFileName}.webp";
+                    discussion.ThumbnailType = ThumbnailType.Image;
+                    discussion.ThumbnailPath = generatedUniqueFileName;
+                }
+                else
+                {
+                    return BadRequest("Invalid file type detected");
+                }
+            }
+            if (updateDiscussionDto.ThumbnailPath != null)
+            {
+                discussion.ThumbnailPath = updateDiscussionDto.ThumbnailPath;
+                discussion.ThumbnailType = ThumbnailType.Image;
+            }
+
+            // Check the other images
+            if (updateDiscussionDto.ExistingImages != null)
+                discussion.OtherImages = updateDiscussionDto.ExistingImages.Where(i => !string.IsNullOrWhiteSpace(i)).ToList();
+            if (updateDiscussionDto.ExistingVideos != null)
+                discussion.VideoPaths = updateDiscussionDto.ExistingVideos.Where(i => !string.IsNullOrWhiteSpace(i)).ToList(); ;
+
+            // Check newly uploaded files
+            if (updateDiscussionDto.NewImages != null)
+            {
+                foreach (var img in updateDiscussionDto.NewImages)
+                {
+                    var generatedUniqueFileName = Guid.NewGuid().ToString();
+                    var otherImageFileOutputPath = Path.Combine("wwwroot/uploads/images", $"{generatedUniqueFileName}.webp");
+                    using var otherImage = await Image.LoadAsync(img.OpenReadStream());
+                    await otherImage.SaveAsync(otherImageFileOutputPath, new WebpEncoder());
+                    var imgPublicUrl = $"/uploads/images/{generatedUniqueFileName}.webp";
+                    discussion.OtherImages.Add(generatedUniqueFileName);
+                }
+            }
+            if (updateDiscussionDto.NewVideos != null)
+            {
+                foreach (var video in updateDiscussionDto.NewVideos)
+                {
+                    var generatedUniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(video.FileName)}";
+                    var otherVideoFileOutputPath = Path.Combine("wwwroot/uploads/discussion_videos", generatedUniqueFileName);
+                    using (var stream = new FileStream(otherVideoFileOutputPath, FileMode.Create))
+                    {
+                        await video.CopyToAsync(stream);
+                    }
+                    var vidPublicUrl = $"/uploads/images/{generatedUniqueFileName}";
+                    discussion.VideoPaths.Add(generatedUniqueFileName);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok(discussion);
+        }
+
         [HttpDelete("{discussionId:int}")]
         [Authorize]
         public async Task<IActionResult> Delete([FromRoute] int discussionId)

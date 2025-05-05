@@ -7,4 +7,4 @@ appsettings.json
 internal.txt
 calls/logs
 calls/*.createPost*
-wwwroot
+wwwroot/

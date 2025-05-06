@@ -32,5 +32,6 @@ namespace RockServers.Models
         public int Likes { get; set; } = 0;
         public int Views { get; set; } = 0;
         public List<AppUser> LikedByUsers { get; set; } = [];
+        public string Tags { get; set; } = string.Empty;
     }
 }

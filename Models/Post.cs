@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -38,5 +39,6 @@ namespace RockServers.Models
         public int Likes { get; set; } = 0;
         public int Dislikes { get; set; } = 0;
         public List<AppUser> LikedByUsers { get; set; } = [];
+        public string Tags { get; set; } = string.Empty;
     }
 }

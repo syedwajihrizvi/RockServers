@@ -15,6 +15,8 @@ using RockServers.Extensions;
 using RockServers.Helpers;
 using RockServers.Mappers;
 using RockServers.Models;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Buffers;
 
 namespace RockServers.Controllers
 {
@@ -36,10 +38,12 @@ namespace RockServers.Controllers
             {
                 if (!string.IsNullOrWhiteSpace(queryObject.SearchValue))
                 {
+                    var searchValue = queryObject.SearchValue.ToLower().Trim().Replace(" ", "");
                     posts = posts.Include(p => p.Game).Where(p => (
-                        p.Title.ToLower().Trim().Replace(" ", "").Contains(queryObject.SearchValue.ToLower().Trim().Replace(" ", "")) ||
-                        p.Description.ToLower().Trim().Replace(" ", "").Contains(queryObject.SearchValue.ToLower().Trim().Replace(" ", "")) ||
-                        p.Game!.Title.ToLower().Trim().Replace(" ", "").Contains(queryObject.SearchValue.ToLower().Trim().Replace(" ", ""))
+                        p.Title.ToLower().Trim().Replace(" ", "").Contains(searchValue) ||
+                        p.Description.ToLower().Trim().Replace(" ", "").Contains(searchValue) ||
+                        p.Game!.Title.ToLower().Trim().Replace(" ", "").Contains(searchValue) ||
+                        p.Tags!.ToLower().Trim().Contains(searchValue)
                         ));
                 }
                 if (!string.IsNullOrWhiteSpace(queryObject.Title))
@@ -185,6 +189,8 @@ namespace RockServers.Controllers
 
             }
 
+            // Generate Tags
+            newPost.Tags = string.Join(" ", TagHelper.GenerateTags(newPost.GameId, newPost.PlatformId));
             await _context.Posts.AddAsync(newPost);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(Get), new { id = newPost.Id }, newPost);

@@ -38,12 +38,15 @@ namespace RockServers.Controllers
                 if (queryObject.GameId != null)
                     discussions = discussions.Where(g => g.GameId == queryObject.GameId);
                 if (queryObject.SearchValue != null)
+                {
+                    var searchValue = queryObject.SearchValue.ToLower().Trim().Replace(" ", "");
                     discussions = discussions.Include(d => d.Game).Where(d => (
-                        d.Title.ToLower().Trim().Replace(" ", "").Contains(queryObject.SearchValue.ToLower().Trim().Replace(" ", "")) ||
-                        d.Content.ToLower().Trim().Replace(" ", "").Contains(queryObject.SearchValue.ToLower().Trim().Replace(" ", "")) ||
-                        d.Game!.Title.ToLower().Trim().Replace(" ", "").Contains(queryObject.SearchValue.ToLower().Trim().Replace(" ", ""))
+                        d.Title.ToLower().Trim().Replace(" ", "").Contains(searchValue) ||
+                        d.Content.ToLower().Trim().Replace(" ", "").Contains(searchValue) ||
+                        d.Game!.Title.ToLower().Trim().Replace(" ", "").Contains(searchValue) ||
+                        d.Tags!.ToLower().Trim().Contains(searchValue)
                     ));
-
+                }
                 // Check for latest
                 if (queryObject.MostRecent)
                     discussions = discussions.OrderByDescending(d => d.PostedAt);
@@ -133,7 +136,7 @@ namespace RockServers.Controllers
                 foreach (var video in createDiscussionDto.OtherVideos)
                 {
                     var generatedUniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(video.FileName)}";
-                    var otherVideoFileOutputPath = Path.Combine("wwwroot/uploads/discussion_videos", generatedUniqueFileName);
+                    var otherVideoFileOutputPath = Path.Combine("wwwroot/uploads/videos", generatedUniqueFileName);
                     using (var stream = new FileStream(otherVideoFileOutputPath, FileMode.Create))
                     {
                         await video.CopyToAsync(stream);
@@ -193,6 +196,7 @@ namespace RockServers.Controllers
                 newDiscussion.ThumbnailPath = createDiscussionDto.ThumbnailPath;
             }
 
+            newDiscussion.Tags = string.Join(" ", TagHelper.GenerateTags(newDiscussion.GameId, null));
             await _context.Discussions.AddAsync(newDiscussion);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(Get), new { id = newDiscussion.Id }, newDiscussion);
@@ -313,7 +317,7 @@ namespace RockServers.Controllers
                 foreach (var video in updateDiscussionDto.NewVideos)
                 {
                     var generatedUniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(video.FileName)}";
-                    var otherVideoFileOutputPath = Path.Combine("wwwroot/uploads/discussion_videos", generatedUniqueFileName);
+                    var otherVideoFileOutputPath = Path.Combine("wwwroot/uploads/videos", generatedUniqueFileName);
                     using (var stream = new FileStream(otherVideoFileOutputPath, FileMode.Create))
                     {
                         await video.CopyToAsync(stream);

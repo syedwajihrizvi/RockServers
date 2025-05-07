@@ -65,11 +65,13 @@ namespace RockServers.Controllers
                     posts = posts.Where(p => p.Id != queryObject.PostToRemoveId);
 
                 // Check if we want posts based on sessions
+                // Current Date
+                var currentDate = DateTime.Now;
                 if (queryObject.SessionType == "active")
-                    posts = posts.Where(p => p.Sessions.Any(s => s.EndTime == null));
+                    posts = posts.Where(p => p.StartTime <= currentDate);
 
                 if (queryObject.SessionType == "joinable")
-                    posts = posts.Where(p => !p.Sessions.Any(s => s.EndTime == null));
+                    posts = posts.Where(p => p.StartTime > currentDate);
 
                 if (!string.IsNullOrWhiteSpace(queryObject.UserId))
                     posts = posts.Where(p => p.AppUserId == queryObject.UserId);
@@ -96,9 +98,6 @@ namespace RockServers.Controllers
                                  .Include(p => p.Comments)
                                  .ThenInclude(c => c.AppUser)
                                  .ThenInclude(a => a!.Avatar)
-                                 .Include(p => p.Sessions)
-                                 .ThenInclude(s => s.Users)
-                                 .ThenInclude(s => s.AppUser)
                                  .Select(p => p.ToPostDto()).ToListAsync();
             // Check the type of posts we are fetching
             return Ok(postsDtos);
@@ -115,9 +114,7 @@ namespace RockServers.Controllers
                                      .Include(p => p.Comments)
                                      .ThenInclude(c => c.AppUser)
                                      .ThenInclude(a => a!.Avatar)
-                                     .Include(p => p.Sessions)
-                                     .ThenInclude(s => s.Users)
-                                     .ThenInclude(s => s.AppUser).FirstOrDefaultAsync();
+                                     .FirstOrDefaultAsync();
             if (post == null)
                 return NotFound($"Post with {id} not found");
             post.Comments = post.Comments.OrderByDescending(c => c.CommentedAt).ToList();
@@ -146,6 +143,7 @@ namespace RockServers.Controllers
                 PlatformId = platformId,
                 AppUserId = appUserId,
                 Title = createPostDto.Title,
+                StartTime = createPostDto.StartTime,
                 Description = createPostDto.Description,
             };
 

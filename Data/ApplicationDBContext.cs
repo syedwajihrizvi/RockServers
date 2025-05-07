@@ -24,8 +24,6 @@ namespace RockServers.Data
         public DbSet<PostReply> PostReplies { get; set; }
         public DbSet<DiscussionComment> DiscussionComments { get; set; }
         public DbSet<DiscussionReply> DiscussionReplies { get; set; }
-        public DbSet<Session> Sessions { get; set; }
-        public DbSet<SessionUser> SessionUsers { get; set; }
         public DbSet<Avatar> Avatars { get; set; }
 
         public DbSet<Platform> Platforms { get; set; }
@@ -42,13 +40,6 @@ namespace RockServers.Data
                 new IdentityRole{Name = "User", NormalizedName = "USER"}
             ];
             modelBuilder.Entity<IdentityRole>().HasData(roles);
-            modelBuilder.Entity<SessionUser>()
-                        .HasKey(s => new { s.SessionId, s.AppUserId });
-            modelBuilder.Entity<Session>()
-                        .HasOne(s => s.Post)
-                        .WithMany(p => p.Sessions)
-                        .HasForeignKey(s => s.PostId)
-                        .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Post>()
                         .HasOne(p => p.AppUser)
                         .WithMany()

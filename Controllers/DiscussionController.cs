@@ -103,6 +103,7 @@ namespace RockServers.Controllers
         }
 
         [HttpPost]
+        [RequestSizeLimit(52428800)] // 50 MB
         [Authorize]
         public async Task<IActionResult> Create([FromForm] CreateDiscussionDto createDiscussionDto)
         {
@@ -234,6 +235,7 @@ namespace RockServers.Controllers
             return Ok(discussion);
         }
 
+        [RequestSizeLimit(52428800)] // 50 MB
         [HttpPatch("{discussionId:int}")]
         public async Task<IActionResult> UpdateDiscussion([FromForm] UpdateDiscussionDto updateDiscussionDto, [FromRoute] int discussionId)
         {

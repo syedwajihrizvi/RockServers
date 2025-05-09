@@ -14,7 +14,6 @@ namespace RockServers.DTO.Posts
         public int PlatformId { get; set; }
         public string ThumbnailPath { get; set; } = string.Empty;
         public IFormFile? ThumbnailFile { get; set; }
-        public DateTime StartTime { get; set; }
     }
 
     public class UpdatePostDto
@@ -25,7 +24,6 @@ namespace RockServers.DTO.Posts
         public int? PlatformId { get; set; }
         public string? ThumbnailPath { get; set; }
         public IFormFile? ThumbnailFile { get; set; }
-        public DateTime? StartTime { get; set; }
     }
 
 }

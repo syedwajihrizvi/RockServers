@@ -18,7 +18,6 @@ namespace RockServers.Mappers
                 Title = post.Title,
                 Description = post.Description,
                 PostedAt = post.PostedAt,
-                StartTime = post.StartTime,
                 GameId = post.GameId,
                 GameName = post.Game!.Title,
                 PlatformId = post.PlatformId,

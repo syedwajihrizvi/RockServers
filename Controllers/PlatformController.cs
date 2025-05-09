@@ -22,7 +22,7 @@ namespace RockServers.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var platforms = await _context.Platforms.ToListAsync();
+            var platforms = await _context.Platforms.OrderBy(P => P.Name).ToListAsync();
             return Ok(platforms);
         }
     }

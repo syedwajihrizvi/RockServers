@@ -54,7 +54,7 @@ namespace RockServers.Controllers
                     posts = posts.Where(p => p.GameId == queryObject.GameId);
                 if (!string.IsNullOrWhiteSpace(queryObject.UserId))
                     posts = posts.Where(p => p.AppUserId == queryObject.UserId);
-                if (queryObject.PlatformId != null)
+                if (queryObject.PlatformId != null && queryObject.PlatformId != 4)
                     posts = posts.Where(p => p.PlatformId == queryObject.PlatformId);
 
                 // Check for latest
@@ -63,15 +63,6 @@ namespace RockServers.Controllers
 
                 if (queryObject.PostToRemoveId != null)
                     posts = posts.Where(p => p.Id != queryObject.PostToRemoveId);
-
-                // Check if we want posts based on sessions
-                // Current Date
-                var currentDate = DateTime.Now;
-                if (queryObject.SessionType == "active")
-                    posts = posts.Where(p => p.StartTime <= currentDate);
-
-                if (queryObject.SessionType == "joinable")
-                    posts = posts.Where(p => p.StartTime > currentDate);
 
                 if (!string.IsNullOrWhiteSpace(queryObject.UserId))
                     posts = posts.Where(p => p.AppUserId == queryObject.UserId);
@@ -143,7 +134,6 @@ namespace RockServers.Controllers
                 PlatformId = platformId,
                 AppUserId = appUserId,
                 Title = createPostDto.Title,
-                StartTime = createPostDto.StartTime,
                 Description = createPostDto.Description,
             };
 
@@ -217,8 +207,6 @@ namespace RockServers.Controllers
                 post.GameId = updatePostDto.GameId;
             if (updatePostDto.PlatformId != null)
                 post.PlatformId = updatePostDto.PlatformId;
-            if (updatePostDto.StartTime != null)
-                post.StartTime = (DateTime)updatePostDto.StartTime;
 
             if (updatePostDto.ThumbnailFile != null)
             {

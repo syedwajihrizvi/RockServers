@@ -293,6 +293,17 @@ namespace RockServers.Controllers
             return Ok(post);
         }
 
+        [HttpPatch("{postId:int}/updateViews")]
+        public async Task<IActionResult> UpdatePostViews([FromRoute] int postId)
+        {
+            var post = await _context.Posts.Where(p => p.Id == postId).FirstOrDefaultAsync();
+            if (post == null)
+                return NotFound($"Discussion with {postId} not found");
+            post.Views += 1;
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
         [HttpDelete("{postId:int}")]
         [Authorize]
         public async Task<IActionResult> Delete([FromRoute] int postId)

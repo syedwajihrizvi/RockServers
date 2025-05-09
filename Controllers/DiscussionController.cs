@@ -235,6 +235,17 @@ namespace RockServers.Controllers
             return Ok(discussion);
         }
 
+        [HttpPatch("{discussionId:int}/updateViews")]
+        public async Task<IActionResult> UpdateDiscussionViews([FromRoute] int discussionId)
+        {
+            var discussion = await _context.Discussions.Where(d => d.Id == discussionId).FirstOrDefaultAsync();
+            if (discussion == null)
+                return NotFound($"Discussion with {discussionId} not found");
+            discussion.Views += 1;
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
         [RequestSizeLimit(52428800)] // 50 MB
         [HttpPatch("{discussionId:int}")]
         public async Task<IActionResult> UpdateDiscussion([FromForm] UpdateDiscussionDto updateDiscussionDto, [FromRoute] int discussionId)

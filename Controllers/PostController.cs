@@ -112,6 +112,7 @@ namespace RockServers.Controllers
             return Ok(post.ToPostDto());
         }
 
+        [RequestSizeLimit(52428800)] // 50 MB
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] CreatePostDto createPostDto)
         {
@@ -185,6 +186,7 @@ namespace RockServers.Controllers
         }
 
 
+        [RequestSizeLimit(52428800)] // 50 MB
         [HttpPatch("{postId:int}")]
         [Authorize]
         public async Task<IActionResult> UpdatePost([FromForm] UpdatePostDto updatePostDto, [FromRoute] int postId)

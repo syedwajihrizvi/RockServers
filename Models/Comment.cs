@@ -25,7 +25,6 @@ namespace RockServers.Models
     {
         public int Id { get; set; }
         public string Content { get; set; } = string.Empty;
-
         public DateTime CommentedAt { get; set; } = DateTime.Now;
         public string? AppUserId { get; set; }
         public AppUser? AppUser { get; set; }

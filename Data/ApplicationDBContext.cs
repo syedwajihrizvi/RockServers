@@ -78,6 +78,9 @@ namespace RockServers.Data
                         .HasForeignKey(c => c.PostId)
                         .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<DiscussionComment>()
+                        .Property(c => c.CommentedAt)
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            modelBuilder.Entity<DiscussionComment>()
                         .HasMany(c => c.LikedByUsers)
                         .WithMany(a => a.LikedDiscussionComments)
                         .UsingEntity(j => j.ToTable("DiscussionCommentLiked"));

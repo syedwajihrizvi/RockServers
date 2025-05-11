@@ -108,7 +108,7 @@ namespace RockServers.Controllers
                     return NotFound("Invalid avatar Id sent");
                 newUser.Avatar = avatar;
             }
-            else
+            if (registerDto.ImageFile != null)
             {
                 var imageFile = registerDto.ImageFile;
                 if (imageFile == null || imageFile.Length == 0)

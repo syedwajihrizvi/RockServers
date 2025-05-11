@@ -17,6 +17,8 @@ using RockServers.Mappers;
 using RockServers.Models;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Buffers;
+using Amazon.S3;
+using Amazon.S3.Model;
 
 namespace RockServers.Controllers
 {
@@ -25,9 +27,11 @@ namespace RockServers.Controllers
     public class PostController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
-        public PostController(ApplicationDBContext context)
+        private readonly IAmazonS3 _amazonS3;
+        public PostController(ApplicationDBContext context, IAmazonS3 amazonS3)
         {
             _context = context;
+            _amazonS3 = amazonS3;
         }
 
         [HttpGet]
@@ -145,14 +149,23 @@ namespace RockServers.Controllers
                     return BadRequest("No file found in request");
                 // Get the file type
                 var fileType = thumbnailFile.ContentType;
+                var bucketName = "rockserversbucket";
+                await using var memorystream = new MemoryStream();
+
                 if (fileType.ToLower().Contains("video"))
                 {
                     var generatedUniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(thumbnailFile.FileName)}";
-                    var outputpath = Path.Combine("wwwroot/uploads/videos", generatedUniqueFileName);
-                    using (var stream = new FileStream(outputpath, FileMode.Create))
+                    await thumbnailFile.CopyToAsync(memorystream);
+                    memorystream.Position = 0;
+                    var request = new PutObjectRequest
                     {
-                        await thumbnailFile.CopyToAsync(stream);
-                    }
+                        BucketName = bucketName,
+                        Key = $"uploads/videos/{generatedUniqueFileName}",
+                        InputStream = memorystream,
+                        ContentType = fileType,
+                        CannedACL = S3CannedACL.PublicRead
+                    };
+                    await _amazonS3.PutObjectAsync(request);
                     newPost.ThumbnailType = ThumbnailType.Video;
                     newPost.ThumbnailPath = generatedUniqueFileName;
 
@@ -161,9 +174,19 @@ namespace RockServers.Controllers
                 {
                     // Extract the main image into a path first
                     var generatedUniqueFileName = Guid.NewGuid().ToString();
+
                     var outputpath = Path.Combine("wwwroot/uploads/images", $"{generatedUniqueFileName}.webp");
                     using var image = await Image.LoadAsync(thumbnailFile.OpenReadStream());
-                    await image.SaveAsync(outputpath, new WebpEncoder());
+                    await image.SaveAsync(memorystream, new WebpEncoder());
+                    memorystream.Position = 0;
+                    var request = new PutObjectRequest
+                    {
+                        BucketName = bucketName,
+                        Key = $"uploads/images{generatedUniqueFileName}.webp",
+                        InputStream = memorystream,
+                        ContentType = fileType,
+                        CannedACL = S3CannedACL.PublicRead
+                    };
                     var publicUrl = $"/uploads/images/{generatedUniqueFileName}.webp";
                     newPost.ThumbnailPath = generatedUniqueFileName;
                 }

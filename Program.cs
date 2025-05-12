@@ -54,7 +54,6 @@ builder.Services.AddSingleton<IAmazonS3>(sp =>
     };
     return new AmazonS3Client(credentials, config);
 });
-builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
@@ -112,7 +111,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.MapOpenApi();
 }
 
 app.UseStaticFiles();

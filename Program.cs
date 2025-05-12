@@ -16,13 +16,15 @@ using RockServers.Services;
 using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
 
-var awsConfig = builder.Configuration.GetSection("AWS");
-var accessKey = awsConfig["AccessKey"];
-var secretKey = awsConfig["SecretKey"];
-var region = awsConfig["Region"];
+// var awsConfig = builder.Configuration.GetSection("AWS");
+var accessKey = builder.Configuration["AWS:AccessKey"];
+var secretKey = builder.Configuration["AWS:SecretKey"];
+var region = builder.Configuration["AWS:Region"];
+var password = builder.Configuration["DB:Password"];
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+if (accessKey == null || secretKey == null || region == null)
+    throw new Exception("Aws Settings not verified");
+
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -54,9 +56,17 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "RockServers", Version = "v1", });
 });
 
+var defaultConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (defaultConnectionString == null)
+    throw new Exception("DB Connection failed");
+
+var connectionString = defaultConnectionString.Replace("__DB_PASSWORD", password);
+Console.WriteLine(connectionString);
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
-    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new Version(9, 0, 1)));
+    options.UseMySql(
+        connectionString,
+        new MySqlServerVersion(new Version(9, 0, 1)));
 });
 
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>

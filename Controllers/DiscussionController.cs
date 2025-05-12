@@ -15,6 +15,7 @@ using RockServers.Extensions;
 using RockServers.Helpers;
 using RockServers.Mappers;
 using RockServers.Models;
+using Amazon.S3;
 
 namespace RockServers.Controllers
 {
@@ -23,10 +24,11 @@ namespace RockServers.Controllers
     public class DiscussionController : ControllerBase
     {
         private readonly ApplicationDBContext _context;
-
-        public DiscussionController(ApplicationDBContext context)
+        private readonly IAmazonS3 _amazonS3;
+        public DiscussionController(ApplicationDBContext context, IAmazonS3 amazonS3)
         {
             _context = context;
+            _amazonS3 = amazonS3;
         }
 
         [HttpGet]
@@ -122,10 +124,7 @@ namespace RockServers.Controllers
                 foreach (var img in createDiscussionDto.OtherImages)
                 {
                     var generatedUniqueFileName = Guid.NewGuid().ToString();
-                    var otherImageFileOutputPath = Path.Combine("wwwroot/uploads/images", $"{generatedUniqueFileName}.webp");
-                    using var otherImage = await Image.LoadAsync(img.OpenReadStream());
-                    await otherImage.SaveAsync(otherImageFileOutputPath, new WebpEncoder());
-                    var imgPublicUrl = $"/uploads/images/{generatedUniqueFileName}.webp";
+                    await _amazonS3.CreateImage(img, generatedUniqueFileName);
                     otherImages.Add(generatedUniqueFileName);
                 }
             }
@@ -137,12 +136,7 @@ namespace RockServers.Controllers
                 foreach (var video in createDiscussionDto.OtherVideos)
                 {
                     var generatedUniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(video.FileName)}";
-                    var otherVideoFileOutputPath = Path.Combine("wwwroot/uploads/videos", generatedUniqueFileName);
-                    using (var stream = new FileStream(otherVideoFileOutputPath, FileMode.Create))
-                    {
-                        await video.CopyToAsync(stream);
-                    }
-                    var vidPublicUrl = $"/uploads/images/{generatedUniqueFileName}";
+                    await _amazonS3.CreateVideo(video, generatedUniqueFileName);
                     videos.Add(generatedUniqueFileName);
                 }
             }
@@ -168,11 +162,9 @@ namespace RockServers.Controllers
                 if (fileType.ToLower().Contains("video"))
                 {
                     var generatedUniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(thumbnailFile.FileName)}";
-                    var outputpath = Path.Combine("wwwroot/uploads/videos", generatedUniqueFileName);
-                    using (var stream = new FileStream(outputpath, FileMode.Create))
-                    {
-                        await thumbnailFile.CopyToAsync(stream);
-                    }
+                    var res = await _amazonS3.CreateVideo(thumbnailFile, generatedUniqueFileName);
+                    if (!res)
+                        return BadRequest("An error occured");
                     newDiscussion.ThumbnailType = ThumbnailType.Video;
                     newDiscussion.ThumbnailPath = generatedUniqueFileName;
                 }
@@ -180,10 +172,9 @@ namespace RockServers.Controllers
                 {
                     // Extract the main image into a path first
                     var generatedUniqueFileName = Guid.NewGuid().ToString();
-                    var outputpath = Path.Combine("wwwroot/uploads/images", $"{generatedUniqueFileName}.webp");
-                    using var image = await Image.LoadAsync(thumbnailFile.OpenReadStream());
-                    await image.SaveAsync(outputpath, new WebpEncoder());
-                    var publicUrl = $"/uploads/images/{generatedUniqueFileName}.webp";
+                    var res = await _amazonS3.CreateImage(thumbnailFile, generatedUniqueFileName);
+                    if (!res)
+                        return BadRequest("An error occured");
                     newDiscussion.ThumbnailType = ThumbnailType.Image;
                     newDiscussion.ThumbnailPath = generatedUniqueFileName;
                 }
@@ -276,11 +267,9 @@ namespace RockServers.Controllers
                 if (fileType.ToLower().Contains("video"))
                 {
                     var generatedUniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(thumbnailFile.FileName)}";
-                    var outputpath = Path.Combine("wwwroot/uploads/videos", generatedUniqueFileName);
-                    using (var stream = new FileStream(outputpath, FileMode.Create))
-                    {
-                        await thumbnailFile.CopyToAsync(stream);
-                    }
+                    var res = await _amazonS3.CreateVideo(thumbnailFile, generatedUniqueFileName);
+                    if (!res)
+                        return BadRequest("Failed to update video");
                     discussion.ThumbnailType = ThumbnailType.Video;
                     discussion.ThumbnailPath = generatedUniqueFileName;
                 }
@@ -288,10 +277,9 @@ namespace RockServers.Controllers
                 {
                     // Extract the main image into a path first
                     var generatedUniqueFileName = Guid.NewGuid().ToString();
-                    var outputpath = Path.Combine("wwwroot/uploads/images", $"{generatedUniqueFileName}.webp");
-                    using var image = await Image.LoadAsync(thumbnailFile.OpenReadStream());
-                    await image.SaveAsync(outputpath, new WebpEncoder());
-                    var publicUrl = $"/uploads/images/{generatedUniqueFileName}.webp";
+                    var res = await _amazonS3.CreateImage(thumbnailFile, generatedUniqueFileName);
+                    if (!res)
+                        return BadRequest("Failed to update image");
                     discussion.ThumbnailType = ThumbnailType.Image;
                     discussion.ThumbnailPath = generatedUniqueFileName;
                 }
@@ -318,10 +306,7 @@ namespace RockServers.Controllers
                 foreach (var img in updateDiscussionDto.NewImages)
                 {
                     var generatedUniqueFileName = Guid.NewGuid().ToString();
-                    var otherImageFileOutputPath = Path.Combine("wwwroot/uploads/images", $"{generatedUniqueFileName}.webp");
-                    using var otherImage = await Image.LoadAsync(img.OpenReadStream());
-                    await otherImage.SaveAsync(otherImageFileOutputPath, new WebpEncoder());
-                    var imgPublicUrl = $"/uploads/images/{generatedUniqueFileName}.webp";
+                    await _amazonS3.CreateImage(img, generatedUniqueFileName);
                     discussion.OtherImages.Add(generatedUniqueFileName);
                 }
             }
@@ -330,12 +315,7 @@ namespace RockServers.Controllers
                 foreach (var video in updateDiscussionDto.NewVideos)
                 {
                     var generatedUniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(video.FileName)}";
-                    var otherVideoFileOutputPath = Path.Combine("wwwroot/uploads/videos", generatedUniqueFileName);
-                    using (var stream = new FileStream(otherVideoFileOutputPath, FileMode.Create))
-                    {
-                        await video.CopyToAsync(stream);
-                    }
-                    var vidPublicUrl = $"/uploads/images/{generatedUniqueFileName}";
+                    await _amazonS3.CreateVideo(video, generatedUniqueFileName);
                     discussion.VideoPaths.Add(generatedUniqueFileName);
                 }
             }

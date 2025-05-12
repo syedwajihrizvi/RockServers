@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Amazon;
+using Amazon.S3;
+using Amazon.Extensions.NETCore.Setup;
 using RockServers.Data;
 using RockServers.Models;
 using Newtonsoft.Json;
@@ -12,6 +15,11 @@ using RockServers.Interfaces;
 using RockServers.Services;
 using System.Reflection;
 var builder = WebApplication.CreateBuilder(args);
+
+var awsConfig = builder.Configuration.GetSection("AWS");
+var accessKey = awsConfig["AccessKey"];
+var secretKey = awsConfig["SecretKey"];
+var region = awsConfig["Region"];
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -26,6 +34,16 @@ builder.Services.AddCors(options =>
             .AllowAnyOrigin()
             .AllowAnyMethod()
             .AllowAnyHeader());
+});
+
+builder.Services.AddSingleton<IAmazonS3>(sp =>
+{
+    var credentials = new Amazon.Runtime.BasicAWSCredentials(accessKey, secretKey);
+    var config = new AmazonS3Config
+    {
+        RegionEndpoint = RegionEndpoint.GetBySystemName(region)
+    };
+    return new AmazonS3Client(credentials, config);
 });
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();

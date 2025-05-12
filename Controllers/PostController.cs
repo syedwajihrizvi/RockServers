@@ -149,23 +149,14 @@ namespace RockServers.Controllers
                     return BadRequest("No file found in request");
                 // Get the file type
                 var fileType = thumbnailFile.ContentType;
-                var bucketName = "rockserversbucket";
                 await using var memorystream = new MemoryStream();
 
                 if (fileType.ToLower().Contains("video"))
                 {
                     var generatedUniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(thumbnailFile.FileName)}";
-                    await thumbnailFile.CopyToAsync(memorystream);
-                    memorystream.Position = 0;
-                    var request = new PutObjectRequest
-                    {
-                        BucketName = bucketName,
-                        Key = $"uploads/videos/{generatedUniqueFileName}",
-                        InputStream = memorystream,
-                        ContentType = fileType,
-                        CannedACL = S3CannedACL.PublicRead
-                    };
-                    await _amazonS3.PutObjectAsync(request);
+                    var res = await _amazonS3.CreateVideo(thumbnailFile, generatedUniqueFileName);
+                    if (!res)
+                        return BadRequest("An error occured");
                     newPost.ThumbnailType = ThumbnailType.Video;
                     newPost.ThumbnailPath = generatedUniqueFileName;
 
@@ -174,20 +165,7 @@ namespace RockServers.Controllers
                 {
                     // Extract the main image into a path first
                     var generatedUniqueFileName = Guid.NewGuid().ToString();
-
-                    var outputpath = Path.Combine("wwwroot/uploads/images", $"{generatedUniqueFileName}.webp");
-                    using var image = await Image.LoadAsync(thumbnailFile.OpenReadStream());
-                    await image.SaveAsync(memorystream, new WebpEncoder());
-                    memorystream.Position = 0;
-                    var request = new PutObjectRequest
-                    {
-                        BucketName = bucketName,
-                        Key = $"uploads/images{generatedUniqueFileName}.webp",
-                        InputStream = memorystream,
-                        ContentType = fileType,
-                        CannedACL = S3CannedACL.PublicRead
-                    };
-                    var publicUrl = $"/uploads/images/{generatedUniqueFileName}.webp";
+                    var res = await _amazonS3.CreateImage(thumbnailFile, generatedUniqueFileName);
                     newPost.ThumbnailPath = generatedUniqueFileName;
                 }
                 else
@@ -243,11 +221,9 @@ namespace RockServers.Controllers
                 if (fileType.ToLower().Contains("video"))
                 {
                     var generatedUniqueFileName = $"{Guid.NewGuid()}{Path.GetExtension(thumbnailFile.FileName)}";
-                    var outputpath = Path.Combine("wwwroot/uploads/videos", generatedUniqueFileName);
-                    using (var stream = new FileStream(outputpath, FileMode.Create))
-                    {
-                        await thumbnailFile.CopyToAsync(stream);
-                    }
+                    var res = await _amazonS3.CreateVideo(thumbnailFile, generatedUniqueFileName);
+                    if (!res)
+                        return BadRequest("Error has occured");
                     post.ThumbnailType = ThumbnailType.Video;
                     post.ThumbnailPath = generatedUniqueFileName;
 
@@ -256,10 +232,9 @@ namespace RockServers.Controllers
                 {
                     // Extract the main image into a path first
                     var generatedUniqueFileName = Guid.NewGuid().ToString();
-                    var outputpath = Path.Combine("wwwroot/uploads/images", $"{generatedUniqueFileName}.webp");
-                    using var image = await Image.LoadAsync(thumbnailFile.OpenReadStream());
-                    await image.SaveAsync(outputpath, new WebpEncoder());
-                    var publicUrl = $"/uploads/images/{generatedUniqueFileName}.webp";
+                    var res = await _amazonS3.CreateImage(thumbnailFile, generatedUniqueFileName);
+                    if (!res)
+                        return BadRequest("Error has occured");
                     post.ThumbnailPath = generatedUniqueFileName;
                     post.ThumbnailType = ThumbnailType.Image;
                 }

@@ -8,3 +8,4 @@ internal.txt
 calls/logs
 calls/*.createPost*
 wwwroot/
+calls/

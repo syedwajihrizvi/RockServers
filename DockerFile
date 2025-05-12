@@ -1,22 +1,20 @@
-# Use .NET 9.0 SDK (Preview)
+# Build stage
 FROM mcr.microsoft.com/dotnet/sdk:9.0-preview AS build
 WORKDIR /app
 
-# Copy csproj and restore as distinct layers
-COPY *.csproj ./
+COPY RockServers.csproj ./
 RUN dotnet restore
 
-# Copy the rest of the code
 COPY . ./
 RUN dotnet publish -c Release -o /publish
 
-# Final image
+# Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:9.0-preview AS runtime
 WORKDIR /app
 COPY --from=build /publish .
 
-# Tell ASP.NET to listen on port 8080
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
 ENTRYPOINT ["dotnet", "RockServers.dll"]
+

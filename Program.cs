@@ -25,6 +25,13 @@ var password = builder.Configuration["DB:Password"];
 if (accessKey == null || secretKey == null || region == null)
     throw new Exception("Aws Settings not verified");
 
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5191";
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(int.Parse(port));
+});
+
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -61,7 +68,6 @@ if (defaultConnectionString == null)
     throw new Exception("DB Connection failed");
 
 var connectionString = defaultConnectionString.Replace("__DB_PASSWORD", password);
-Console.WriteLine(connectionString);
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {
     options.UseMySql(

@@ -24,16 +24,20 @@ namespace RockServers.Controllers
         private readonly ApplicationDBContext _context;
         private readonly ITokenService _tokenService;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly ILogger<AccountController> _logger;
+
         public AccountController(
             UserManager<AppUser> userManager,
             ApplicationDBContext context,
             ITokenService tokenService,
-            SignInManager<AppUser> signInManager)
+            SignInManager<AppUser> signInManager,
+            ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _context = context;
             _tokenService = tokenService;
             _signInManager = signInManager;
+            _logger = logger;
         }
 
         [HttpGet("me")]
@@ -153,8 +157,9 @@ namespace RockServers.Controllers
                 user = await _userManager.FindByNameAsync(loginDto.EmailOrUsername!);
             if (user == null)
                 return Unauthorized("Invalid Login Details Provided");
-            var result = _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
-            if (result.IsCompletedSuccessfully)
+            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
+            if (result.Succeeded)
+            {
                 return Ok(new BaseUserDto
                 {
                     Email = user.Email!,
@@ -163,6 +168,7 @@ namespace RockServers.Controllers
                     LastName = user.LastName,
                     Token = _tokenService.CreateToken(user)
                 });
+            }
             return Unauthorized("Invalid Login Details Provided");
         }
 

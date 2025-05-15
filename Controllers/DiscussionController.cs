@@ -49,9 +49,6 @@ namespace RockServers.Controllers
                         d.Tags!.ToLower().Trim().Contains(searchValue)
                     ));
                 }
-                // Check for latest
-                if (queryObject.MostRecent)
-                    discussions = discussions.OrderByDescending(d => d.PostedAt);
 
                 // Check if we ant to remove any discussions
                 if (queryObject.DiscussionToRemoveId != null)
@@ -65,6 +62,8 @@ namespace RockServers.Controllers
                         discussions = discussions.OrderByDescending(d => d.DiscussionComments.Count);
                     else if (queryObject.OrderBy == "views")
                         discussions = discussions.OrderByDescending(d => d.Views);
+                    else
+                        discussions = discussions.OrderByDescending(d => d.PostedAt);
                 }
 
                 if (!string.IsNullOrWhiteSpace(queryObject.UserId))
@@ -76,13 +75,24 @@ namespace RockServers.Controllers
             }
             ;
 
-            var discussionDtos = await discussions.Include(d => d.Game)
+            var pageSize = queryObject!.PageSize;
+            var skipCount = (queryObject!.Page - 1) * pageSize;
+            discussions = discussions.Skip((int)skipCount!).Take(pageSize);
+
+            int totalCount = await _context.Discussions.CountAsync();
+            var discussionDtos = await discussions
+                                           .Include(d => d.Game)
                                            .Include(d => d.AppUser)
                                            .ThenInclude(a => a!.Avatar)
                                            .Include(d => d.DiscussionComments)
                                            .Select(d => d.ToDiscussionDto())
                                            .ToListAsync();
-            return Ok(discussionDtos);
+            var data = new DiscussionDataObject
+            {
+                Data = discussionDtos,
+                hasMore = skipCount + discussionDtos.Count() < totalCount
+            };
+            return Ok(data);
         }
 
         [HttpGet("{id:int}")]

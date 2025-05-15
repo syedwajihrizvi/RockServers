@@ -31,6 +31,8 @@ namespace RockServers.Helpers
         public string OrderBy { get; set; } = string.Empty;
         public bool MostRecent { get; set; }
         public int? Limit { get; set; }
+        public int? Page { get; set; } = 1;
+        public int PageSize { get; set; } = 8;
     }
 
     public class DiscussionQueryObject
@@ -42,6 +44,8 @@ namespace RockServers.Helpers
         public string OrderBy { get; set; } = string.Empty;
         public bool MostRecent { get; set; }
         public int? Limit { get; set; }
+        public int? Page { get; set; } = 1;
+        public int PageSize { get; set; } = 8;
 
     }
 

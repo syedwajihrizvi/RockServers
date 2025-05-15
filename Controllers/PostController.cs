@@ -57,10 +57,6 @@ namespace RockServers.Controllers
                 if (queryObject.PlatformId != null && queryObject.PlatformId != 4)
                     posts = posts.Where(p => p.PlatformId == queryObject.PlatformId);
 
-                // Check for latest
-                if (queryObject.MostRecent)
-                    posts = posts.OrderByDescending(p => p.PostedAt);
-
                 if (queryObject.PostToRemoveId != null)
                     posts = posts.Where(p => p.Id != queryObject.PostToRemoveId);
 
@@ -79,19 +75,32 @@ namespace RockServers.Controllers
                         posts = posts.OrderByDescending(p => p.Comments.Count);
                     else if (queryObject.OrderBy == "views")
                         posts = posts.OrderByDescending(p => p.Views);
+                    else
+                        posts = posts.OrderByDescending(d => d.PostedAt);
                 }
             }
+            var pageSize = queryObject!.PageSize;
+            var skipCount = (queryObject!.Page - 1) * pageSize;
+            posts = posts.Skip((int)skipCount!).Take(pageSize);
 
+            int totalCount = await _context.Posts.CountAsync();
             var postsDtos = await posts.Include(p => p.Game)
-                                 .Include(p => p.AppUser)
-                                 .ThenInclude(a => a!.Avatar)
-                                 .Include(p => p.Platform)
-                                 .Include(p => p.Comments)
-                                 .ThenInclude(c => c.AppUser)
-                                 .ThenInclude(a => a!.Avatar)
-                                 .Select(p => p.ToPostDto()).ToListAsync();
-            // Check the type of posts we are fetching
-            return Ok(postsDtos);
+                                       .Include(p => p.AppUser)
+                                       .ThenInclude(a => a!.Avatar)
+                                       .Include(p => p.Platform)
+                                       .Include(p => p.Comments)
+                                       .ThenInclude(c => c.AppUser)
+                                       .ThenInclude(a => a!.Avatar)
+                                       .Select(p => p.ToPostDto())
+                                       .ToListAsync();
+
+            var data = new PostDataObject
+            {
+                Data = postsDtos,
+                hasMore = skipCount + postsDtos.Count < totalCount
+            };
+
+            return Ok(data);
         }
 
         [HttpGet("{id:int}")]

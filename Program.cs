@@ -82,9 +82,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
-
-app.UseCors("AllowAll");
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
